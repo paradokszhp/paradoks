@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klub Planszówkowy</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --border-radius: 12px;
+            --shadow: 0 6px 15px rgba(0,0,0,0.1);
+            --primary-color: #642888; /* Fiolet */
+            --secondary-color: #a6ce39; /* Zielony */
+            --admin-color: #FFD700; /* Złoty */
+            --dark-bg: #1e1e2f;
+            --dark-surface: #2c2c3e;
+            --dark-text: #f0f0f0;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: var(--font-family);
+        }
+        /* --- KONTENER CENTRUJĄCY DLA WIDOKU LOGOWANIA --- */
+        #authContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f4f7f9;
+        }
+        .auth-form {
+            width: 100%;
+            max-width: 400px;
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            box-sizing: border-box;
+        }
+        /* --- PANEL APLIKACJI (PEŁNY EKRAN) --- */
+        .app-panel {
+            width: 100%;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .main-content {
+            padding: 30px 40px;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+        }
+        .grid-item {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .full-width { grid-column: 1 / -1; }
+        
+        h1, h2, h3, h4 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        h4 { margin-bottom: 15px; border-bottom: 1px solid; padding-bottom: 10px; }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input, select {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        button, .button-link {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s, transform 0.2s;
+            text-align: center;
+            text-decoration: none;
+        }
+        button:hover, .button-link:hover {
+            transform: translateY(-2px);
+        }
+        #loginBtn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        #registerBtn {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        #logoutBtn {
+            background-color: #e74c3c;
+            color: white;
+            margin-top: 40px;
+            max-width: 200px;
+        }
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            word-wrap: break-word;
+        }
+        .message-error { color: #e74c3c; }
+        .message-success { color: #2ecc71; }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; vertical-align: middle; }
+        td .button-group { flex-direction: row; }
+        td button { font-size: 14px; padding: 8px; }
+        ul { list-style-type: none; padding: 0; }
+        li { padding: 10px; border-bottom: 1px solid #eee; }
+
+        /* --- MOTYWY --- */
+        .theme-podstawowy { background-color: #fff; }
+        .theme-podstawowy .app-header { background-color: var(--secondary-color); color: #fff; }
+        .theme-podstawowy .grid-item { background-color: #fafafa; border-color: #eee;}
+        .theme-podstawowy h4 { border-color: #eee; }
+        .theme-podstawowy .app-header strong, .theme-podstawowy .app-header small, .theme-podstawowy .app-header span { color: #fff; }
+
+        .theme-czlonek { background-color: var(--dark-bg); color: var(--dark-text); }
+        .theme-czlonek .app-header { background-color: var(--primary-color); color: var(--dark-text); }
+        .theme-czlonek .grid-item { background-color: var(--dark-surface); border-color: var(--primary-color); }
+        .theme-czlonek h4 { border-color: var(--primary-color); color: var(--dark-text); }
+        .theme-czlonek strong, .theme-czlonek small, .theme-czlonek span, .theme-czlonek p, .theme-czlonek li, .theme-czlonek label { color: var(--dark-text); }
+        .theme-czlonek input, .theme-czlonek select { background-color: var(--dark-bg); color: var(--dark-text); border-color: var(--primary-color); }
+        .theme-czlonek table, .theme-czlonek th, .theme-czlonek td { border-color: var(--primary-color); }
+        .theme-czlonek li { border-color: var(--primary-color); }
+        .theme-czlonek .button-link { background-color: var(--dark-bg); color: var(--dark-text); border: 1px solid var(--primary-color); display: block; margin-bottom: 10px;}
+        .theme-czlonek #logoutBtn { background-color: #c0392b; }
+
+        /* --- UKŁAD KART ADMINISTRATORA --- */
+        .theme-admin { background-color: var(--dark-bg); color: var(--dark-text); }
+        .theme-admin .app-header { background-color: var(--primary-color); color: var(--dark-text); }
+        .theme-admin .app-header strong { color: var(--admin-color); }
+        
+        .admin-layout {
+            display: flex;
+            flex-direction: row;
+            min-height: calc(100vh - 85px); /* Wysokość minus nagłówek */
+        }
+        .admin-nav {
+            flex: 0 0 200px; /* Stała szerokość nawigacji */
+            background-color: var(--dark-surface);
+            padding: 20px;
+            border-right: 2px solid var(--admin-color);
+        }
+        .admin-nav button {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            text-align: left;
+            background-color: transparent;
+            border: 1px solid transparent;
+            color: var(--dark-text);
+        }
+        .admin-nav button.active {
+            background-color: var(--primary-color);
+            border-color: var(--admin-color);
+            font-weight: bold;
+        }
+        .admin-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        .theme-admin .grid-item {
+            background-color: var(--dark-surface);
+            border: none; /* Usunięcie ramki */
+            padding: 0; /* Usunięcie wewnętrznego paddingu dla zwartości */
+        }
+        .theme-admin .grid-item > h4 {
+            padding: 20px 20px 10px 20px; /* Dodanie paddingu tylko do tytułu */
+        }
+        .theme-admin .grid-item > *:not(h4) {
+            padding: 0 20px 20px 20px; /* Dodanie paddingu do reszty zawartości */
+        }
+        .theme-admin h4 { border-color: var(--admin-color); color: var(--admin-color); }
+        .theme-admin strong, .theme-admin small, .theme-admin span, .theme-admin p, .theme-admin li, .theme-admin label { color: var(--dark-text); }
+        .theme-admin .app-header strong { color: var(--admin-color); }
+        .theme-admin input, .theme-admin select { background-color: var(--dark-bg); color: var(--dark-text); border-color: var(--admin-color); }
+        .theme-admin table, .theme-admin th, .theme-admin td { border-color: var(--admin-color); }
+        .theme-admin li { border-color: var(--admin-color); }
+        .theme-admin .button-link { background-color: var(--dark-bg); color: var(--dark-text); border: 1px solid var(--admin-color); display: block; margin-bottom: 10px;}
+        .theme-admin button { background-color: var(--primary-color); color: white; border: 2px solid var(--admin-color); }
+        .theme-admin #logoutBtn { border: none; background-color: #c0392b; }
+        
+        @media (max-width: 768px) {
+            .admin-layout {
+                flex-direction: column;
+            }
+            .admin-nav {
+                flex: 0 0 auto;
+                border-right: none;
+                border-bottom: 2px solid var(--admin-color);
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .admin-nav button {
+                width: auto;
+                flex: 1 1 auto;
+            }
+            .main-content { padding: 15px; }
+            .admin-content { padding: 15px 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="authContainer">
+        <div class="auth-form">
+            <h1>Witaj w Klubie!</h1>
+            <form id="authForm">
+                <input type="text" id="imie" placeholder="Imię" required>
+                <input type="text" id="nazwisko" placeholder="Nazwisko" required>
+                <div class="button-group">
+                    <button type="button" id="loginBtn">Zaloguj</button>
+                    <button type="button" id="registerBtn">Zarejestruj</button>
+                </div>
+            </form>
+            <div id="message"></div>
+        </div>
+    </div>
+
+    <div id="appScreen" style="display: none;">
+        <!-- Panel aplikacji będzie wstrzykiwany tutaj przez JS -->
+    </div>
+
+    <script>
+        // --- KONFIGURACJA SUPABASE ---
+        const SUPABASE_URL = 'https://pjvqsaeokkzfwwtwzvax.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqdnFzYWVva2t6Znd3dHd6dmF4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTAyMzc0MSwiZXhwIjoyMDcwNTk5NzQxfQ.qLyf8DXp-RGF4-9mA7ekgmrCzurSs0MZvNAEqAq-qac';
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // --- ELEMENTY DOM ---
+        const authContainer = document.getElementById('authContainer');
+        const appScreen = document.getElementById('appScreen');
+        const messageDiv = document.querySelector('#authContainer #message');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const imieInput = document.getElementById('imie');
+        const nazwiskoInput = document.getElementById('nazwisko');
+        const authForm = document.getElementById('authForm');
+
+        // --- STAN APLIKACJI ---
+        let currentUser = null;
+
+        // --- GŁÓWNE FUNKCJE LOGOWANIA ---
+        function showMessage(text, type = 'error') {
+            messageDiv.textContent = text;
+            messageDiv.className = type === 'error' ? 'message-error' : 'message-success';
+        }
+
+        async function handleSuccessfulAuth(user) {
+            currentUser = user;
+            renderApp();
+        }
+
+        async function loginUser() {
+            const imie = imieInput.value.trim();
+            const nazwisko = nazwiskoInput.value.trim();
+            if (!imie || !nazwisko) { showMessage('Imię i nazwisko są wymagane.'); return; }
+            showMessage('Logowanie...', 'success');
+            try {
+                const { data, error } = await db.from('uzytkownicy').select('*').eq('imie', imie).eq('nazwisko', nazwisko).single();
+                if (error) throw error;
+                handleSuccessfulAuth(data);
+            } catch (error) {
+                console.error('Błąd logowania:', error);
+                showMessage(error.message || 'Nieprawidłowe imię lub nazwisko.');
+            }
+        }
+
+        async function registerUser() {
+            const imie = imieInput.value.trim();
+            const nazwisko = nazwiskoInput.value.trim();
+            if (!imie || !nazwisko) { showMessage('Imię i nazwisko są wymagane.'); return; }
+            showMessage('Rejestracja...', 'success');
+            try {
+                const { data: existingUser } = await db.from('uzytkownicy').select('id').eq('imie', imie).eq('nazwisko', nazwisko);
+                if (existingUser && existingUser.length > 0) throw new Error('Użytkownik o takim imieniu i nazwisku już istnieje.');
+                const { data: newUser } = await db.from('uzytkownicy').insert([{ imie, nazwisko, poziom_uprawnien: 'podstawowy' }]).select().single();
+                handleSuccessfulAuth(newUser);
+            } catch (error) {
+                console.error('Błąd rejestracji:', error);
+                showMessage(error.message || 'Nie udało się utworzyć konta.');
+            }
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            authContainer.style.display = 'flex';
+            appScreen.style.display = 'none';
+            appScreen.innerHTML = '';
+            imieInput.value = '';
+            nazwiskoInput.value = '';
+            messageDiv.textContent = '';
+        }
+
+        // --- FUNKCJE RENDERUJĄCE POSZCZEGÓLNE MODUŁY ---
+
+        async function getRentModuleHTML() {
+            return `
+                <div class="grid-item">
+                    <h4>Wypożycz Grę</h4>
+                    <form id="rentForm">
+                        <input type="text" id="gameNumberInput" placeholder="Wpisz 4-cyfrowy numer gry" required>
+                        <button type="submit">Wypożycz</button>
+                    </form>
+                </div>
+            `;
+        }
+        
+        async function getMeetingsModuleHTML() {
+            const { data: meetings, error } = await db.from('spotkania').select('*').order('data_spotkania', { ascending: false });
+            if (error) { console.error(error); return '<div>Błąd ładowania spotkań.</div>'; }
+            
+            const now = new Date();
+            const meetingsList = meetings.map(meet => {
+                const meetDate = new Date(meet.data_spotkania);
+                const isPast = meetDate < now;
+                const dateString = meetDate.toLocaleString('pl-PL', { dateStyle: 'full', timeStyle: 'short' });
+                return `<li style="${isPast ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${dateString}</li>`;
+            }).join('');
+
+            return `
+                <div class="grid-item">
+                    <h4>Spotkania Klubu</h4>
+                    <ul>${meetingsList || '<li>Brak nadchodzących spotkań.</li>'}</ul>
+                </div>
+            `;
+        }
+
+        async function getFilesModuleHTML() {
+            const { data: files, error } = await db.from('pliki').select('*');
+             if (error) { console.error(error); return '<div>Błąd ładowania plików.</div>'; }
+
+            const filesList = files.map(file => `<a href="${file.link}" class="button-link" download>${file.nazwa}</a>`).join('');
+            return `
+                <div class="grid-item">
+                    <h4>Pliki do Pobrania</h4>
+                    ${filesList || '<p>Brak plików do pobrania.</p>'}
+                </div>
+            `;
+        }
+
+        async function getUserRentalsModuleHTML() {
+            const { data: rentals, error } = await db
+                .from('wypozyczenia')
+                .select(`id, data_wypozyczenia, gry (id, nazwa_gry, numer_gry)`)
+                .eq('uzytkownik_id', currentUser.id)
+                .eq('status', 'aktywne');
+
+            if (error) { console.error(error); return '<div>Błąd ładowania wypożyczonych gier.</div>'; }
+
+            const rentalRows = rentals.map(r => `
+                <tr>
+                    <td>${r.gry.nazwa_gry} (${String(r.gry.numer_gry).padStart(4, '0')})</td>
+                    <td>${new Date(r.data_wypozyczenia).toLocaleDateString('pl-PL')}</td>
+                    <td><button class="user-return-rental-btn" data-rentalid="${r.id}" data-gameid="${r.gry.id}">Zwróć</button></td>
+                </tr>
+            `).join('');
+
+            return `
+                <div class="grid-item">
+                    <h4>Moje Wypożyczone Gry</h4>
+                    ${rentals.length > 0 ? `
+                        <table>
+                            <thead><tr><th>Gra</th><th>Data wypożyczenia</th><th>Akcja</th></tr></thead>
+                            <tbody>${rentalRows}</tbody>
+                        </table>
+                    ` : '<p>Aktualnie nie masz wypożyczonych żadnych gier.</p>'}
+                </div>
+            `;
+        }
+
+        // --- FUNKCJE RENDERUJĄCE PANEL ADMINISTRATORA ---
+
+        async function getAdminUsersModuleHTML() {
+            const { data: users, error } = await db.from('uzytkownicy').select('*');
+            if (error) { console.error(error); return '<div>Błąd ładowania użytkowników.</div>'; }
+
+            const userRows = users.map(user => `
+                <tr>
+                    <td>${user.imie} ${user.nazwisko}</td>
+                    <td>
+                        <select data-userid="${user.id}" class="permission-select">
+                            <option value="podstawowy" ${user.poziom_uprawnien === 'podstawowy' ? 'selected' : ''}>Podstawowy</option>
+                            <option value="członek klubu" ${user.poziom_uprawnien === 'członek klubu' ? 'selected' : ''}>Członek Klubu</option>
+                            <option value="administrator" ${user.poziom_uprawnien === 'administrator' ? 'selected' : ''}>Administrator</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="button-group">
+                            <button class="edit-user-btn" data-userid="${user.id}" data-imie="${user.imie}" data-nazwisko="${user.nazwisko}">Edytuj</button>
+                            <button class="delete-user-btn" data-userid="${user.id}">Usuń</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            return `
+                <div class="grid-item full-width">
+                    <h4>Zarządzaj Użytkownikami</h4>
+                    <form id="addUserForm">
+                        <input type="text" id="newUserName" placeholder="Imię nowego użytkownika" required>
+                        <input type="text" id="newUserSurname" placeholder="Nazwisko nowego użytkownika" required>
+                        <button type="submit">Dodaj Użytkownika</button>
+                    </form>
+                    <hr>
+                    <table>
+                        <thead><tr><th>Użytkownik</th><th>Poziom Uprawnień</th><th>Akcje</th></tr></thead>
+                        <tbody>${userRows}</tbody>
+                    </table>
+                </div>
+            `;
+        }
+        
+        async function getAdminGamesModuleHTML() {
+             const { data: games, error } = await db.from('gry').select('id, numer_gry, nazwa_gry, dostepnosc').order('numer_gry');
+             if (error) { console.error(error); return '<div>Błąd ładowania gier.</div>'; }
+             const gameRows = games.map(g => `<tr>
+                <td>${String(g.numer_gry).padStart(4, '0')}</td>
+                <td>${g.nazwa_gry}</td>
+                <td>${g.dostepnosc ? 'Dostępna' : 'Wypożyczona'}</td>
+                <td>
+                    <div class="button-group">
+                        <button class="edit-game-btn" data-gameid="${g.id}" data-gamename="${g.nazwa_gry}">Edytuj</button>
+                        <button class="delete-game-btn" data-gameid="${g.id}">Usuń</button>
+                    </div>
+                </td>
+             </tr>`).join('');
+             return `
+                <div class="grid-item full-width">
+                    <h4>Zarządzaj Grami</h4>
+                    <form id="addGameForm">
+                        <input type="text" id="newGameName" placeholder="Nazwa nowej gry" required>
+                        <button type="submit">Dodaj Grę</button>
+                    </form>
+                    <table>
+                        <thead><tr><th>Numer</th><th>Nazwa</th><th>Status</th><th>Akcje</th></tr></thead>
+                        <tbody>${gameRows}</tbody>
+                    </table>
+                </div>
+             `;
+        }
+
+        async function getAdminFilesModuleHTML() {
+            const { data: files, error } = await db.from('pliki').select('*');
+            if (error) { console.error(error); return '<div>Błąd ładowania plików.</div>'; }
+            const fileRows = files.map(f => `<tr>
+                <td>${f.nazwa}</td>
+                <td>
+                    <div class="button-group">
+                        <button class="edit-file-btn" data-fileid="${f.id}" data-filename="${f.nazwa}" data-filelink="${f.link}">Edytuj</button>
+                        <button class="delete-file-btn" data-fileid="${f.id}">Usuń</button>
+                    </div>
+                </td>
+            </tr>`).join('');
+            return `
+                <div class="grid-item full-width">
+                    <h4>Zarządzaj Plikami</h4>
+                    <form id="addFileForm">
+                        <input type="text" id="newFileName" placeholder="Nazwa pliku" required>
+                        <input type="text" id="newFileLink" placeholder="Link do pliku" required>
+                        <button type="submit">Dodaj Plik</button>
+                    </form>
+                    <table>
+                       <thead><tr><th>Nazwa</th><th>Akcja</th></tr></thead>
+                       <tbody>${fileRows}</tbody>
+                    </table>
+                </div>
+            `;
+        }
+        
+        async function getAdminMeetingsModuleHTML() {
+            const { data: meetings, error } = await db.from('spotkania').select('id, data_spotkania').order('data_spotkania', { ascending: false });
+            if (error) { console.error(error); return '<div>Błąd ładowania spotkań.</div>'; }
+            const meetingRows = meetings.map(m => {
+                 const dateObj = new Date(m.data_spotkania);
+                 const dateString = dateObj.toLocaleString('pl-PL');
+                 const dateForInput = dateObj.toISOString().slice(0,16);
+                 return `<tr>
+                    <td>${dateString}</td>
+                    <td>
+                        <div class="button-group">
+                            <button class="edit-meeting-btn" data-meetingid="${m.id}" data-currentdate="${dateForInput}">Edytuj</button>
+                            <button class="delete-meeting-btn" data-meetingid="${m.id}">Usuń</button>
+                        </div>
+                    </td>
+                 </tr>`
+            }).join('');
+            return `
+                <div class="grid-item full-width">
+                    <h4>Zarządzaj Spotkaniami</h4>
+                    <form id="addMeetingForm">
+                        <input type="datetime-local" id="newMeetingDate" required>
+                        <button type="submit">Dodaj Spotkanie</button>
+                    </form>
+                    <table>
+                        <thead><tr><th>Data</th><th>Akcja</th></tr></thead>
+                        <tbody>${meetingRows}</tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        async function getAdminRentalsModuleHTML() {
+            const { data: rentals, error } = await db.from('wypozyczenia').select(`
+                id, data_wypozyczenia, data_zwrotu, status, gra_id,
+                uzytkownicy (imie, nazwisko),
+                gry (nazwa_gry, numer_gry)
+            `).order('data_wypozyczenia', { ascending: false });
+
+            if (error) { console.error(error); return '<div>Błąd ładowania wypożyczeń.</div>'; }
+            
+            const rentalRows = rentals.map(r => `
+                <tr>
+                    <td>${r.gry ? r.gry.nazwa_gry : 'Brak danych'} (${r.gry ? String(r.gry.numer_gry).padStart(4, '0') : 'Brak numeru'})</td>
+                    <td>${r.uzytkownicy ? r.uzytkownicy.imie : 'Brak'} ${r.uzytkownicy ? r.uzytkownicy.nazwisko : 'danych'}</td>
+                    <td>${new Date(r.data_wypozyczenia).toLocaleDateString('pl-PL')}</td>
+                    <td>
+                        ${r.status === 'aktywne' ? `<button class="return-rental-btn" data-rentalid="${r.id}" data-gameid="${r.gra_id}">Oznacz jako zwróconą</button>` : (r.data_zwrotu ? new Date(r.data_zwrotu).toLocaleDateString('pl-PL') : 'Brak daty')}
+                    </td>
+                </tr>
+            `).join('');
+
+            return `
+                <div class="grid-item full-width">
+                    <h4>Historia Wypożyczeń</h4>
+                    <table>
+                        <thead><tr><th>Gra</th><th>Użytkownik</th><th>Data wypożyczenia</th><th>Akcja / Data zwrotu</th></tr></thead>
+                        <tbody>${rentalRows}</tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // --- GŁÓWNA FUNKCJA RENDERUJĄCA APLIKACJĘ ---
+
+        async function renderApp() {
+            if (!currentUser) { logoutUser(); return; }
+            
+            authContainer.style.display = 'none';
+            appScreen.style.display = 'block';
+            appScreen.innerHTML = '<h2>Ładowanie panelu...</h2>';
+
+            const { imie, nazwisko, poziom_uprawnien } = currentUser;
+            let panelContentHTML = '';
+            let themeClass = '';
+
+            if (poziom_uprawnien === 'administrator') {
+                themeClass = 'theme-admin';
+                panelContentHTML = `
+                    <div class="admin-layout">
+                        <nav class="admin-nav">
+                            <button class="admin-nav-btn active" data-target="users">Użytkownicy</button>
+                            <button class="admin-nav-btn" data-target="games">Gry</button>
+                            <button class="admin-nav-btn" data-target="rentals">Wypożyczenia</button>
+                            <button class="admin-nav-btn" data-target="files">Pliki</button>
+                            <button class="admin-nav-btn" data-target="meetings">Spotkania</button>
+                        </nav>
+                        <div class="admin-content">
+                            ${await getAdminUsersModuleHTML()}
+                        </div>
+                    </div>
+                `;
+            } else {
+                let panelModulesHTML = [];
+                 if (poziom_uprawnien === 'podstawowy' || poziom_uprawnien === 'członek klubu') {
+                    panelModulesHTML.push(await getRentModuleHTML());
+                    panelModulesHTML.push(await getMeetingsModuleHTML());
+                    panelModulesHTML.push(await getUserRentalsModuleHTML());
+                }
+                if (poziom_uprawnien === 'członek klubu') {
+                    panelModulesHTML.push(await getFilesModuleHTML());
+                }
+                
+                themeClass = (poziom_uprawnien === 'członek klubu') ? 'theme-czlonek' : 'theme-podstawowy';
+                panelContentHTML = `<div class="grid-container">${panelModulesHTML.join('')}</div>`;
+            }
+            
+            appScreen.innerHTML = `
+                <div class="app-panel ${themeClass}">
+                    <header class="app-header">
+                        <div>
+                            <strong>${imie} ${nazwisko}</strong><br>
+                            <small>Poziom: ${poziom_uprawnien}</small>
+                        </div>
+                        <span>Kod do kłódki: 11111</span>
+                    </header>
+                    <main class="main-content">
+                        ${panelContentHTML}
+                        <button id="logoutBtn">Wyloguj</button>
+                    </main>
+                </div>
+            `;
+        }
+
+        // --- OBSŁUGA ZDARZEŃ ---
+        function setupEventListeners() {
+            loginBtn.addEventListener('click', loginUser);
+            registerBtn.addEventListener('click', registerUser);
+            authForm.addEventListener('submit', (e) => { e.preventDefault(); loginUser(); });
+
+            appScreen.addEventListener('click', async (e) => {
+                const target = e.target;
+                if (target.id === 'logoutBtn') logoutUser();
+                
+                // Nawigacja w panelu admina
+                if (target.matches('.admin-nav-btn')) {
+                    const contentArea = document.querySelector('.admin-content');
+                    if (!contentArea) return;
+
+                    document.querySelectorAll('.admin-nav-btn').forEach(btn => btn.classList.remove('active'));
+                    target.classList.add('active');
+                    
+                    contentArea.innerHTML = '<h4>Ładowanie...</h4>';
+                    const targetModule = target.dataset.target;
+                    switch(targetModule) {
+                        case 'users': contentArea.innerHTML = await getAdminUsersModuleHTML(); break;
+                        case 'games': contentArea.innerHTML = await getAdminGamesModuleHTML(); break;
+                        case 'rentals': contentArea.innerHTML = await getAdminRentalsModuleHTML(); break;
+                        case 'files': contentArea.innerHTML = await getAdminFilesModuleHTML(); break;
+                        case 'meetings': contentArea.innerHTML = await getAdminMeetingsModuleHTML(); break;
+                    }
+                }
+
+                // --- AKCJE USUWANIA ---
+                if (target.matches('.delete-file-btn')) {
+                    if (confirm('Czy na pewno chcesz usunąć ten plik?')) {
+                       await db.from('pliki').delete().eq('id', target.dataset.fileid);
+                       renderApp();
+                    }
+                }
+                if (target.matches('.delete-meeting-btn')) {
+                     if (confirm('Czy na pewno chcesz usunąć to spotkanie?')) {
+                       await db.from('spotkania').delete().eq('id', target.dataset.meetingid);
+                       renderApp();
+                    }
+                }
+                if (target.matches('.delete-user-btn')) {
+                     if (confirm('Czy na pewno chcesz usunąć tego użytkownika? Tej akcji nie można cofnąć.')) {
+                       await db.from('uzytkownicy').delete().eq('id', target.dataset.userid);
+                       renderApp();
+                    }
+                }
+                if (target.matches('.delete-game-btn')) {
+                     if (confirm('Czy na pewno chcesz usunąć tę grę? Usunie to również powiązane wypożyczenia.')) {
+                       await db.from('gry').delete().eq('id', target.dataset.gameid);
+                       renderApp();
+                    }
+                }
+
+                // --- AKCJE EDYCJI ---
+                if (target.matches('.edit-user-btn')) {
+                    const newImie = prompt('Podaj nowe imię:', target.dataset.imie);
+                    const newNazwisko = prompt('Podaj nowe nazwisko:', target.dataset.nazwisko);
+                    if (newImie && newNazwisko) {
+                        await db.from('uzytkownicy').update({ imie: newImie, nazwisko: newNazwisko }).eq('id', target.dataset.userid);
+                        renderApp();
+                    }
+                }
+                if (target.matches('.edit-game-btn')) {
+                    const newName = prompt('Podaj nową nazwę gry:', target.dataset.gamename);
+                    if (newName) {
+                        await db.from('gry').update({ nazwa_gry: newName }).eq('id', target.dataset.gameid);
+                        renderApp();
+                    }
+                }
+                if (target.matches('.edit-meeting-btn')) {
+                    const newDate = prompt('Podaj nową datę i godzinę (YYYY-MM-DDTHH:MM):', target.dataset.currentdate);
+                    if (newDate) {
+                        await db.from('spotkania').update({ data_spotkania: newDate }).eq('id', target.dataset.meetingid);
+                        renderApp();
+                    }
+                }
+                if (target.matches('.edit-file-btn')) {
+                    const newName = prompt('Podaj nową nazwę pliku:', target.dataset.filename);
+                    const newLink = prompt('Podaj nowy link do pliku:', target.dataset.filelink);
+                    if (newName && newLink) {
+                        await db.from('pliki').update({ nazwa: newName, link: newLink }).eq('id', target.dataset.fileid);
+                        renderApp();
+                    }
+                }
+
+                // --- AKCJE WYPOŻYCZEŃ ---
+                if (target.matches('.return-rental-btn') || target.matches('.user-return-rental-btn')) {
+                    if (confirm('Czy na pewno chcesz oznaczyć tę grę jako zwróconą?')) {
+                        await db.from('wypozyczenia').update({ status: 'zakończone', data_zwrotu: new Date().toISOString() }).eq('id', target.dataset.rentalid);
+                        await db.from('gry').update({ dostepnosc: true }).eq('id', target.dataset.gameid);
+                        renderApp();
+                    }
+                }
+            });
+
+            appScreen.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formId = e.target.id;
+
+                if (formId === 'rentForm') {
+                    const gameNumber = document.getElementById('gameNumberInput').value;
+                    const { data: game } = await db.from('gry').select('id, dostepnosc').eq('numer_gry', gameNumber).single();
+                    if (game && game.dostepnosc) {
+                        await db.from('wypozyczenia').insert({ gra_id: game.id, uzytkownik_id: currentUser.id });
+                        await db.from('gry').update({ dostepnosc: false }).eq('id', game.id);
+                        alert('Gra wypożyczona!');
+                        renderApp();
+                    } else {
+                        alert('Gra niedostępna lub nieprawidłowy numer.');
+                    }
+                }
+                if (formId === 'addGameForm') {
+                    const name = document.getElementById('newGameName').value;
+                    const { data: lastGame } = await db.from('gry').select('numer_gry').order('numer_gry', { ascending: false }).limit(1).single();
+                    const newNumber = lastGame ? lastGame.numer_gry + 1 : 1;
+                    await db.from('gry').insert({ nazwa_gry: name, numer_gry: newNumber });
+                    renderApp();
+                }
+                if (formId === 'addFileForm') {
+                    const name = document.getElementById('newFileName').value;
+                    const link = document.getElementById('newFileLink').value;
+                    await db.from('pliki').insert({ nazwa: name, link: link });
+                    renderApp();
+                }
+                if (formId === 'addMeetingForm') {
+                    const date = document.getElementById('newMeetingDate').value;
+                    await db.from('spotkania').insert({ data_spotkania: date });
+                    renderApp();
+                }
+                if (formId === 'addUserForm') {
+                    const name = document.getElementById('newUserName').value;
+                    const surname = document.getElementById('newUserSurname').value;
+                    await db.from('uzytkownicy').insert({ imie: name, nazwisko: surname });
+                    renderApp();
+                }
+            });
+
+            appScreen.addEventListener('change', async (e) => {
+                if (e.target.matches('.permission-select')) {
+                    const userId = e.target.dataset.userid;
+                    const newPermission = e.target.value;
+                    await db.from('uzytkownicy').update({ poziom_uprawnien: newPermission }).eq('id', userId);
+                    alert('Zmieniono uprawnienia.');
+                    renderApp();
+                }
+            });
+        }
+        
+        setupEventListeners();
+
+    </script>
+</body>
+</html>
