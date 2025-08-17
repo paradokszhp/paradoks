@@ -11,9 +11,12 @@
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             --border-radius: 12px;
             --shadow: 0 6px 15px rgba(0,0,0,0.1);
-            --primary-color: #642888; /* Fiolet */
-            --secondary-color: #a6ce39; /* Zielony */
-            --admin-color: #FFD700; /* Złoty */
+            /* Domyślne kolory, zostaną nadpisane przez JS */
+            --primary-color: #642888; 
+            --secondary-color: #a6ce39;
+            --admin-accent-color: #FFD700;
+            --light-bg: #fff;
+            --light-text: #333;
             --dark-bg: #1e1e2f;
             --dark-surface: #2c2c3e;
             --dark-text: #f0f0f0;
@@ -137,11 +140,11 @@
         li { padding: 10px; border-bottom: 1px solid #eee; }
 
         /* --- MOTYWY --- */
-        .theme-podstawowy { background-color: #fff; }
-        .theme-podstawowy .app-header { background-color: var(--secondary-color); color: #fff; }
+        .theme-podstawowy { background-color: var(--light-bg); }
+        .theme-podstawowy .app-header { background-color: var(--secondary-color); color: var(--light-bg); }
         .theme-podstawowy .grid-item { background-color: #fafafa; border-color: #eee;}
         .theme-podstawowy h4 { border-color: #eee; }
-        .theme-podstawowy .app-header strong, .theme-podstawowy .app-header small, .theme-podstawowy .app-header span { color: #fff; }
+        .theme-podstawowy .app-header strong, .theme-podstawowy .app-header small, .theme-podstawowy .app-header span { color: var(--light-bg); }
 
         .theme-czlonek { background-color: var(--dark-bg); color: var(--dark-text); }
         .theme-czlonek .app-header { background-color: var(--primary-color); color: var(--dark-text); }
@@ -157,7 +160,7 @@
         /* --- UKŁAD KART ADMINISTRATORA --- */
         .theme-admin { background-color: var(--dark-bg); color: var(--dark-text); }
         .theme-admin .app-header { background-color: var(--primary-color); color: var(--dark-text); }
-        .theme-admin .app-header strong { color: var(--admin-color); }
+        .theme-admin .app-header strong { color: var(--admin-accent-color); }
         
         .admin-layout {
             display: flex;
@@ -168,7 +171,7 @@
             flex: 0 0 200px; /* Stała szerokość nawigacji */
             background-color: var(--dark-surface);
             padding: 20px;
-            border-right: 2px solid var(--admin-color);
+            border-right: 2px solid var(--admin-accent-color);
         }
         .admin-nav button {
             display: block;
@@ -181,7 +184,7 @@
         }
         .admin-nav button.active {
             background-color: var(--primary-color);
-            border-color: var(--admin-color);
+            border-color: var(--admin-accent-color);
             font-weight: bold;
         }
         .admin-content {
@@ -191,23 +194,23 @@
         }
         .theme-admin .grid-item {
             background-color: var(--dark-surface);
-            border: none; /* Usunięcie ramki */
-            padding: 0; /* Usunięcie wewnętrznego paddingu dla zwartości */
+            border: none;
+            padding: 0;
         }
         .theme-admin .grid-item > h4 {
-            padding: 20px 20px 10px 20px; /* Dodanie paddingu tylko do tytułu */
+            padding: 20px 20px 10px 20px;
         }
         .theme-admin .grid-item > *:not(h4) {
-            padding: 0 20px 20px 20px; /* Dodanie paddingu do reszty zawartości */
+            padding: 0 20px 20px 20px;
         }
-        .theme-admin h4 { border-color: var(--admin-color); color: var(--admin-color); }
+        .theme-admin h4 { border-color: var(--admin-accent-color); color: var(--admin-accent-color); }
         .theme-admin strong, .theme-admin small, .theme-admin span, .theme-admin p, .theme-admin li, .theme-admin label { color: var(--dark-text); }
-        .theme-admin .app-header strong { color: var(--admin-color); }
-        .theme-admin input, .theme-admin select { background-color: var(--dark-bg); color: var(--dark-text); border-color: var(--admin-color); }
-        .theme-admin table, .theme-admin th, .theme-admin td { border-color: var(--admin-color); }
-        .theme-admin li { border-color: var(--admin-color); }
-        .theme-admin .button-link { background-color: var(--dark-bg); color: var(--dark-text); border: 1px solid var(--admin-color); display: block; margin-bottom: 10px;}
-        .theme-admin button { background-color: var(--primary-color); color: white; border: 2px solid var(--admin-color); }
+        .theme-admin .app-header strong { color: var(--admin-accent-color); }
+        .theme-admin input, .theme-admin select { background-color: var(--dark-bg); color: var(--dark-text); border-color: var(--admin-accent-color); }
+        .theme-admin table, .theme-admin th, .theme-admin td { border-color: var(--admin-accent-color); }
+        .theme-admin li { border-color: var(--admin-accent-color); }
+        .theme-admin .button-link { background-color: var(--dark-bg); color: var(--dark-text); border: 1px solid var(--admin-accent-color); display: block; margin-bottom: 10px;}
+        .theme-admin button { background-color: var(--primary-color); color: white; border: 2px solid var(--admin-accent-color); }
         .theme-admin #logoutBtn { border: none; background-color: #c0392b; }
         
         @media (max-width: 768px) {
@@ -217,7 +220,7 @@
             .admin-nav {
                 flex: 0 0 auto;
                 border-right: none;
-                border-bottom: 2px solid var(--admin-color);
+                border-bottom: 2px solid var(--admin-accent-color);
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: center;
@@ -270,6 +273,7 @@
 
         // --- STAN APLIKACJI ---
         let currentUser = null;
+        let appSettings = {};
 
         // --- GŁÓWNE FUNKCJE LOGOWANIA ---
         function showMessage(text, type = 'error') {
@@ -277,8 +281,19 @@
             messageDiv.className = type === 'error' ? 'message-error' : 'message-success';
         }
 
+        async function fetchAppSettings() {
+            const { data, error } = await db.from('Ustawienia').select('*').eq('id', 1).single();
+            if (error) {
+                console.error("Błąd pobierania ustawień!", error);
+                alert("Nie można załadować konfiguracji aplikacji. Sprawdź konsolę.");
+                return;
+            }
+            appSettings = data;
+        }
+
         async function handleSuccessfulAuth(user) {
             currentUser = user;
+            await fetchAppSettings();
             renderApp();
         }
 
@@ -357,15 +372,15 @@
             `;
         }
 
-        async function getFilesModuleHTML() {
+        async function getLinksModuleHTML() {
             const { data: files, error } = await db.from('pliki').select('*');
-             if (error) { console.error(error); return '<div>Błąd ładowania plików.</div>'; }
+             if (error) { console.error(error); return '<div>Błąd ładowania linków.</div>'; }
 
             const filesList = files.map(file => `<a href="${file.link}" class="button-link" download>${file.nazwa}</a>`).join('');
             return `
                 <div class="grid-item">
-                    <h4>Pliki do Pobrania</h4>
-                    ${filesList || '<p>Brak plików do pobrania.</p>'}
+                    <h4>Linki</h4>
+                    ${filesList || '<p>Brak linków.</p>'}
                 </div>
             `;
         }
@@ -471,9 +486,9 @@
              `;
         }
 
-        async function getAdminFilesModuleHTML() {
+        async function getAdminLinksModuleHTML() {
             const { data: files, error } = await db.from('pliki').select('*');
-            if (error) { console.error(error); return '<div>Błąd ładowania plików.</div>'; }
+            if (error) { console.error(error); return '<div>Błąd ładowania linków.</div>'; }
             const fileRows = files.map(f => `<tr>
                 <td>${f.nazwa}</td>
                 <td>
@@ -485,11 +500,11 @@
             </tr>`).join('');
             return `
                 <div class="grid-item full-width">
-                    <h4>Zarządzaj Plikami</h4>
+                    <h4>Zarządzaj Linkami</h4>
                     <form id="addFileForm">
-                        <input type="text" id="newFileName" placeholder="Nazwa pliku" required>
-                        <input type="text" id="newFileLink" placeholder="Link do pliku" required>
-                        <button type="submit">Dodaj Plik</button>
+                        <input type="text" id="newFileName" placeholder="Nazwa linku" required>
+                        <input type="text" id="newFileLink" placeholder="Adres URL" required>
+                        <button type="submit">Dodaj Link</button>
                     </form>
                     <table>
                        <thead><tr><th>Nazwa</th><th>Akcja</th></tr></thead>
@@ -562,6 +577,52 @@
             `;
         }
 
+        async function getAdminSettingsModuleHTML() {
+            return `
+                <div class="grid-item full-width">
+                    <h4>Ustawienia Aplikacji</h4>
+                    <form id="settingsForm">
+                        <label for="kodKlodki">Kod do kłódki</label>
+                        <input type="text" id="kodKlodki" value="${appSettings.kod_do_klodki}" required>
+                        
+                        <hr>
+                        <h5>Panel Podstawowy</h5>
+                        <label for="podstawowyMotyw">Motyw</label>
+                        <select id="podstawowyMotyw">
+                            <option value="jasny" ${appSettings.podstawowy_motyw === 'jasny' ? 'selected' : ''}>Jasny</option>
+                            <option value="ciemny" ${appSettings.podstawowy_motyw === 'ciemny' ? 'selected' : ''}>Ciemny</option>
+                        </select>
+                        <label for="podstawowyKolor">Kolor główny</label>
+                        <input type="color" id="podstawowyKolor" value="${appSettings.podstawowy_kolor_glowny}">
+
+                        <hr>
+                        <h5>Panel Członka Klubu</h5>
+                        <label for="czlonekMotyw">Motyw</label>
+                        <select id="czlonekMotyw">
+                            <option value="jasny" ${appSettings.czlonek_motyw === 'jasny' ? 'selected' : ''}>Jasny</option>
+                            <option value="ciemny" ${appSettings.czlonek_motyw === 'ciemny' ? 'selected' : ''}>Ciemny</option>
+                        </select>
+                        <label for="czlonekKolor">Kolor główny</label>
+                        <input type="color" id="czlonekKolor" value="${appSettings.czlonek_kolor_glowny}">
+
+                        <hr>
+                        <h5>Panel Administratora</h5>
+                        <label for="adminMotyw">Motyw</label>
+                        <select id="adminMotyw">
+                            <option value="jasny" ${appSettings.admin_motyw === 'jasny' ? 'selected' : ''}>Jasny</option>
+                            <option value="ciemny" ${appSettings.admin_motyw === 'ciemny' ? 'selected' : ''}>Ciemny</option>
+                        </select>
+                        <label for="adminKolor">Kolor główny</label>
+                        <input type="color" id="adminKolor" value="${appSettings.admin_kolor_glowny}">
+                        <label for="adminAkcent">Kolor akcentu</label>
+                        <input type="color" id="adminAkcent" value="${appSettings.admin_kolor_akcentu}">
+
+                        <button type="submit">Zapisz Ustawienia</button>
+                    </form>
+                </div>
+            `;
+        }
+
         // --- GŁÓWNA FUNKCJA RENDERUJĄCA APLIKACJĘ ---
 
         async function renderApp() {
@@ -576,15 +637,16 @@
             let themeClass = '';
 
             if (poziom_uprawnien === 'administrator') {
-                themeClass = 'theme-admin';
+                themeClass = appSettings.admin_motyw === 'jasny' ? 'theme-podstawowy' : 'theme-admin';
                 panelContentHTML = `
                     <div class="admin-layout">
                         <nav class="admin-nav">
                             <button class="admin-nav-btn active" data-target="users">Użytkownicy</button>
                             <button class="admin-nav-btn" data-target="games">Gry</button>
                             <button class="admin-nav-btn" data-target="rentals">Wypożyczenia</button>
-                            <button class="admin-nav-btn" data-target="files">Pliki</button>
+                            <button class="admin-nav-btn" data-target="files">Linki</button>
                             <button class="admin-nav-btn" data-target="meetings">Spotkania</button>
+                            <button class="admin-nav-btn" data-target="settings">Ustawienia</button>
                         </nav>
                         <div class="admin-content">
                             ${await getAdminUsersModuleHTML()}
@@ -593,16 +655,20 @@
                 `;
             } else {
                 let panelModulesHTML = [];
-                 if (poziom_uprawnien === 'podstawowy' || poziom_uprawnien === 'członek klubu') {
+                if (poziom_uprawnien === 'podstawowy' || poziom_uprawnien === 'członek klubu') {
                     panelModulesHTML.push(await getRentModuleHTML());
                     panelModulesHTML.push(await getMeetingsModuleHTML());
                     panelModulesHTML.push(await getUserRentalsModuleHTML());
                 }
                 if (poziom_uprawnien === 'członek klubu') {
-                    panelModulesHTML.push(await getFilesModuleHTML());
+                    panelModulesHTML.push(await getLinksModuleHTML());
                 }
                 
-                themeClass = (poziom_uprawnien === 'członek klubu') ? 'theme-czlonek' : 'theme-podstawowy';
+                if (poziom_uprawnien === 'członek klubu') {
+                    themeClass = appSettings.czlonek_motyw === 'jasny' ? 'theme-podstawowy' : 'theme-czlonek';
+                } else {
+                    themeClass = appSettings.podstawowy_motyw === 'jasny' ? 'theme-podstawowy' : 'theme-czlonek';
+                }
                 panelContentHTML = `<div class="grid-container">${panelModulesHTML.join('')}</div>`;
             }
             
@@ -613,7 +679,7 @@
                             <strong>${imie} ${nazwisko}</strong><br>
                             <small>Poziom: ${poziom_uprawnien}</small>
                         </div>
-                        <span>Kod do kłódki: 11111</span>
+                        <span>Kod do kłódki: ${appSettings.kod_do_klodki}</span>
                     </header>
                     <main class="main-content">
                         ${panelContentHTML}
@@ -621,6 +687,16 @@
                     </main>
                 </div>
             `;
+
+            // Dynamiczne ustawianie kolorów
+            const root = document.documentElement;
+            root.style.setProperty('--primary-color', appSettings.czlonek_kolor_glowny);
+            root.style.setProperty('--secondary-color', appSettings.podstawowy_kolor_glowny);
+            root.style.setProperty('--admin-accent-color', appSettings.admin_kolor_akcentu);
+            if (themeClass === 'theme-admin') {
+                 const adminHeader = document.querySelector('.theme-admin .app-header');
+                 if(adminHeader) adminHeader.style.backgroundColor = appSettings.admin_kolor_glowny;
+            }
         }
 
         // --- OBSŁUGA ZDARZEŃ ---
@@ -647,14 +723,15 @@
                         case 'users': contentArea.innerHTML = await getAdminUsersModuleHTML(); break;
                         case 'games': contentArea.innerHTML = await getAdminGamesModuleHTML(); break;
                         case 'rentals': contentArea.innerHTML = await getAdminRentalsModuleHTML(); break;
-                        case 'files': contentArea.innerHTML = await getAdminFilesModuleHTML(); break;
+                        case 'files': contentArea.innerHTML = await getAdminLinksModuleHTML(); break;
                         case 'meetings': contentArea.innerHTML = await getAdminMeetingsModuleHTML(); break;
+                        case 'settings': contentArea.innerHTML = await getAdminSettingsModuleHTML(); break;
                     }
                 }
 
                 // --- AKCJE USUWANIA ---
                 if (target.matches('.delete-file-btn')) {
-                    if (confirm('Czy na pewno chcesz usunąć ten plik?')) {
+                    if (confirm('Czy na pewno chcesz usunąć ten link?')) {
                        await db.from('pliki').delete().eq('id', target.dataset.fileid);
                        renderApp();
                     }
@@ -702,8 +779,8 @@
                     }
                 }
                 if (target.matches('.edit-file-btn')) {
-                    const newName = prompt('Podaj nową nazwę pliku:', target.dataset.filename);
-                    const newLink = prompt('Podaj nowy link do pliku:', target.dataset.filelink);
+                    const newName = prompt('Podaj nową nazwę linku:', target.dataset.filename);
+                    const newLink = prompt('Podaj nowy adres URL:', target.dataset.filelink);
                     if (newName && newLink) {
                         await db.from('pliki').update({ nazwa: newName, link: newLink }).eq('id', target.dataset.fileid);
                         renderApp();
@@ -759,6 +836,27 @@
                     const surname = document.getElementById('newUserSurname').value;
                     await db.from('uzytkownicy').insert({ imie: name, nazwisko: surname });
                     renderApp();
+                }
+                if (formId === 'settingsForm') {
+                    const newSettings = {
+                        kod_do_klodki: document.getElementById('kodKlodki').value,
+                        podstawowy_motyw: document.getElementById('podstawowyMotyw').value,
+                        podstawowy_kolor_glowny: document.getElementById('podstawowyKolor').value,
+                        czlonek_motyw: document.getElementById('czlonekMotyw').value,
+                        czlonek_kolor_glowny: document.getElementById('czlonekKolor').value,
+                        admin_motyw: document.getElementById('adminMotyw').value,
+                        admin_kolor_glowny: document.getElementById('adminKolor').value,
+                        admin_kolor_akcentu: document.getElementById('adminAkcent').value,
+                    };
+                    const { error } = await db.from('Ustawienia').update(newSettings).eq('id', 1);
+                    if (error) {
+                        alert('Błąd zapisu ustawień!');
+                        console.error(error);
+                    } else {
+                        alert('Ustawienia zapisane!');
+                        await fetchAppSettings();
+                        renderApp();
+                    }
                 }
             });
 
