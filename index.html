@@ -17,8 +17,8 @@
             --admin-accent-color: #FFD700;
             --light-bg: #fff;
             --light-text: #333;
-            --dark-bg: #1e1e2f;
-            --dark-surface: #2c2c3e;
+            --dark-bg: #121212; /* Ciemniejszy motyw */
+            --dark-surface: #1E1E1E; /* Ciemniejsza powierzchnia */
             --dark-text: #f0f0f0;
         }
         html, body {
@@ -83,6 +83,12 @@
             border-radius: 6px;
             border: 1px solid #ccc;
         }
+        input[type="color"] {
+            padding: 0;
+            height: 40px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
         .button-group {
             display: flex;
             gap: 10px;
@@ -139,14 +145,19 @@
         ul { list-style-type: none; padding: 0; }
         li { padding: 10px; border-bottom: 1px solid #eee; }
 
-        /* --- MOTYWY --- */
-        .theme-podstawowy { background-color: var(--light-bg); }
+        /* --- MOTYWY TŁA --- */
+        .motyw-jasny { background-color: var(--light-bg); color: var(--light-text); }
+        .motyw-ciemny { background-color: var(--dark-bg); color: var(--dark-text); }
+        
+        /* --- KOLORYSTYKA PANELI --- */
         .theme-podstawowy .app-header { background-color: var(--secondary-color); color: var(--light-bg); }
         .theme-podstawowy .grid-item { background-color: #fafafa; border-color: #eee;}
-        .theme-podstawowy h4 { border-color: #eee; }
+        .theme-podstawowy h4 { border-color: #eee; color: var(--light-text); }
         .theme-podstawowy .app-header strong, .theme-podstawowy .app-header small, .theme-podstawowy .app-header span { color: var(--light-bg); }
+        .theme-podstawowy button, .theme-podstawowy .button-link { background-color: var(--secondary-color); color: var(--light-bg); }
+        .theme-podstawowy #logoutBtn { background-color: #c0392b; }
 
-        .theme-czlonek { background-color: var(--dark-bg); color: var(--dark-text); }
+
         .theme-czlonek .app-header { background-color: var(--primary-color); color: var(--dark-text); }
         .theme-czlonek .grid-item { background-color: var(--dark-surface); border-color: var(--primary-color); }
         .theme-czlonek h4 { border-color: var(--primary-color); color: var(--dark-text); }
@@ -154,81 +165,33 @@
         .theme-czlonek input, .theme-czlonek select { background-color: var(--dark-bg); color: var(--dark-text); border-color: var(--primary-color); }
         .theme-czlonek table, .theme-czlonek th, .theme-czlonek td { border-color: var(--primary-color); }
         .theme-czlonek li { border-color: var(--primary-color); }
-        .theme-czlonek .button-link { background-color: var(--dark-bg); color: var(--dark-text); border: 1px solid var(--primary-color); display: block; margin-bottom: 10px;}
+        .theme-czlonek button, .theme-czlonek .button-link { background-color: var(--primary-color); color: var(--dark-text); }
+        .theme-czlonek .button-link { border: 1px solid var(--primary-color); }
         .theme-czlonek #logoutBtn { background-color: #c0392b; }
 
-        /* --- UKŁAD KART ADMINISTRATORA --- */
-        .theme-admin { background-color: var(--dark-bg); color: var(--dark-text); }
         .theme-admin .app-header { background-color: var(--primary-color); color: var(--dark-text); }
         .theme-admin .app-header strong { color: var(--admin-accent-color); }
-        
-        .admin-layout {
-            display: flex;
-            flex-direction: row;
-            min-height: calc(100vh - 85px); /* Wysokość minus nagłówek */
-        }
-        .admin-nav {
-            flex: 0 0 200px; /* Stała szerokość nawigacji */
-            background-color: var(--dark-surface);
-            padding: 20px;
-            border-right: 2px solid var(--admin-accent-color);
-        }
-        .admin-nav button {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            text-align: left;
-            background-color: transparent;
-            border: 1px solid transparent;
-            color: var(--dark-text);
-        }
-        .admin-nav button.active {
-            background-color: var(--primary-color);
-            border-color: var(--admin-accent-color);
-            font-weight: bold;
-        }
-        .admin-content {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-        }
-        .theme-admin .grid-item {
-            background-color: var(--dark-surface);
-            border: none;
-            padding: 0;
-        }
-        .theme-admin .grid-item > h4 {
-            padding: 20px 20px 10px 20px;
-        }
-        .theme-admin .grid-item > *:not(h4) {
-            padding: 0 20px 20px 20px;
-        }
+        .admin-layout { display: flex; flex-direction: row; min-height: calc(100vh - 85px); }
+        .admin-nav { flex: 0 0 200px; background-color: var(--dark-surface); padding: 20px; border-right: 2px solid var(--admin-accent-color); }
+        .admin-nav button { display: block; width: 100%; margin-bottom: 10px; text-align: left; background-color: transparent; border: 1px solid transparent; color: var(--dark-text); }
+        .admin-nav button.active { background-color: var(--primary-color); border-color: var(--admin-accent-color); font-weight: bold; }
+        .admin-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .theme-admin .grid-item { background-color: var(--dark-surface); border: none; padding: 0; }
+        .theme-admin .grid-item > h4 { padding: 20px 20px 10px 20px; }
+        .theme-admin .grid-item > *:not(h4) { padding: 0 20px 20px 20px; }
         .theme-admin h4 { border-color: var(--admin-accent-color); color: var(--admin-accent-color); }
         .theme-admin strong, .theme-admin small, .theme-admin span, .theme-admin p, .theme-admin li, .theme-admin label { color: var(--dark-text); }
         .theme-admin .app-header strong { color: var(--admin-accent-color); }
         .theme-admin input, .theme-admin select { background-color: var(--dark-bg); color: var(--dark-text); border-color: var(--admin-accent-color); }
         .theme-admin table, .theme-admin th, .theme-admin td { border-color: var(--admin-accent-color); }
         .theme-admin li { border-color: var(--admin-accent-color); }
-        .theme-admin .button-link { background-color: var(--dark-bg); color: var(--dark-text); border: 1px solid var(--admin-accent-color); display: block; margin-bottom: 10px;}
         .theme-admin button { background-color: var(--primary-color); color: white; border: 2px solid var(--admin-accent-color); }
         .theme-admin #logoutBtn { border: none; background-color: #c0392b; }
         
         @media (max-width: 768px) {
-            .admin-layout {
-                flex-direction: column;
-            }
-            .admin-nav {
-                flex: 0 0 auto;
-                border-right: none;
-                border-bottom: 2px solid var(--admin-accent-color);
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .admin-nav button {
-                width: auto;
-                flex: 1 1 auto;
-            }
+            .admin-layout { flex-direction: column; }
+            .admin-nav { flex: 0 0 auto; border-right: none; border-bottom: 2px solid var(--admin-accent-color); display: flex; flex-wrap: wrap; justify-content: center; }
+            .admin-nav button { width: auto; flex: 1 1 auto; }
             .main-content { padding: 15px; }
             .admin-content { padding: 15px 0; }
         }
@@ -635,9 +598,11 @@
             const { imie, nazwisko, poziom_uprawnien } = currentUser;
             let panelContentHTML = '';
             let themeClass = '';
+            let motywClass = '';
 
             if (poziom_uprawnien === 'administrator') {
-                themeClass = appSettings.admin_motyw === 'jasny' ? 'theme-podstawowy' : 'theme-admin';
+                themeClass = 'theme-admin';
+                motywClass = appSettings.admin_motyw === 'jasny' ? 'motyw-jasny' : 'motyw-ciemny';
                 panelContentHTML = `
                     <div class="admin-layout">
                         <nav class="admin-nav">
@@ -665,15 +630,17 @@
                 }
                 
                 if (poziom_uprawnien === 'członek klubu') {
-                    themeClass = appSettings.czlonek_motyw === 'jasny' ? 'theme-podstawowy' : 'theme-czlonek';
+                    themeClass = 'theme-czlonek';
+                    motywClass = appSettings.czlonek_motyw === 'jasny' ? 'motyw-jasny' : 'motyw-ciemny';
                 } else {
-                    themeClass = appSettings.podstawowy_motyw === 'jasny' ? 'theme-podstawowy' : 'theme-czlonek';
+                    themeClass = 'theme-podstawowy';
+                    motywClass = appSettings.podstawowy_motyw === 'jasny' ? 'motyw-jasny' : 'motyw-ciemny';
                 }
                 panelContentHTML = `<div class="grid-container">${panelModulesHTML.join('')}</div>`;
             }
             
             appScreen.innerHTML = `
-                <div class="app-panel ${themeClass}">
+                <div class="app-panel ${themeClass} ${motywClass}">
                     <header class="app-header">
                         <div>
                             <strong>${imie} ${nazwisko}</strong><br>
@@ -693,10 +660,15 @@
             root.style.setProperty('--primary-color', appSettings.czlonek_kolor_glowny);
             root.style.setProperty('--secondary-color', appSettings.podstawowy_kolor_glowny);
             root.style.setProperty('--admin-accent-color', appSettings.admin_kolor_akcentu);
-            if (themeClass === 'theme-admin') {
-                 const adminHeader = document.querySelector('.theme-admin .app-header');
-                 if(adminHeader) adminHeader.style.backgroundColor = appSettings.admin_kolor_glowny;
-            }
+            
+            const adminHeader = document.querySelector('.theme-admin .app-header');
+            if(adminHeader) adminHeader.style.backgroundColor = appSettings.admin_kolor_glowny;
+
+            // Ustawienie tła dla inputów typu color
+            const colorInputs = document.querySelectorAll('input[type="color"]');
+            colorInputs.forEach(input => {
+                input.style.backgroundColor = input.value;
+            });
         }
 
         // --- OBSŁUGA ZDARZEŃ ---
@@ -867,6 +839,10 @@
                     await db.from('uzytkownicy').update({ poziom_uprawnien: newPermission }).eq('id', userId);
                     alert('Zmieniono uprawnienia.');
                     renderApp();
+                }
+                // Dynamiczna zmiana koloru w input[type=color]
+                if (e.target.matches('input[type="color"]')) {
+                    e.target.style.backgroundColor = e.target.value;
                 }
             });
         }
