@@ -282,7 +282,7 @@
         }
 
         async function fetchAppSettings() {
-            const { data, error } = await db.from('Ustawienia').select('*').eq('id', 1).single();
+            const { data, error } = await db.from('ustawienia').select('*').eq('id', 1).single();
             if (error) {
                 console.error("Błąd pobierania ustawień!", error);
                 alert("Nie można załadować konfiguracji aplikacji. Sprawdź konsolę.");
@@ -848,7 +848,7 @@
                         admin_kolor_glowny: document.getElementById('adminKolor').value,
                         admin_kolor_akcentu: document.getElementById('adminAkcent').value,
                     };
-                    const { error } = await db.from('Ustawienia').update(newSettings).eq('id', 1);
+                    const { error } = await db.from('ustawienia').update(newSettings).eq('id', 1);
                     if (error) {
                         alert('Błąd zapisu ustawień!');
                         console.error(error);
