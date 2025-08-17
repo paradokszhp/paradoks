@@ -14,6 +14,7 @@
             /* Domyślne kolory, zostaną nadpisane przez JS */
             --primary-color: #642888; 
             --secondary-color: #a6ce39;
+            --admin-primary-color: #642888;
             --admin-accent-color: #FFD700;
             --light-bg: #fff;
             --light-text: #333;
@@ -169,24 +170,47 @@
         .theme-czlonek .button-link { border: 1px solid var(--primary-color); }
         .theme-czlonek #logoutBtn { background-color: #c0392b; }
 
-        .theme-admin .app-header { background-color: var(--primary-color); color: var(--dark-text); }
-        .theme-admin .app-header strong { color: var(--admin-accent-color); }
+        /* --- UKŁAD KART I MOTYWY ADMINISTRATORA --- */
         .admin-layout { display: flex; flex-direction: row; min-height: calc(100vh - 85px); }
-        .admin-nav { flex: 0 0 200px; background-color: var(--dark-surface); padding: 20px; border-right: 2px solid var(--admin-accent-color); }
-        .admin-nav button { display: block; width: 100%; margin-bottom: 10px; text-align: left; background-color: transparent; border: 1px solid transparent; color: var(--dark-text); }
-        .admin-nav button.active { background-color: var(--primary-color); border-color: var(--admin-accent-color); font-weight: bold; }
+        .admin-nav { flex: 0 0 200px; padding: 20px; }
         .admin-content { flex: 1; padding: 30px; overflow-y: auto; }
-        .theme-admin .grid-item { background-color: var(--dark-surface); border: none; padding: 0; }
-        .theme-admin .grid-item > h4 { padding: 20px 20px 10px 20px; }
-        .theme-admin .grid-item > *:not(h4) { padding: 0 20px 20px 20px; }
-        .theme-admin h4 { border-color: var(--admin-accent-color); color: var(--admin-accent-color); }
-        .theme-admin strong, .theme-admin small, .theme-admin span, .theme-admin p, .theme-admin li, .theme-admin label { color: var(--dark-text); }
-        .theme-admin .app-header strong { color: var(--admin-accent-color); }
-        .theme-admin input, .theme-admin select { background-color: var(--dark-bg); color: var(--dark-text); border-color: var(--admin-accent-color); }
-        .theme-admin table, .theme-admin th, .theme-admin td { border-color: var(--admin-accent-color); }
-        .theme-admin li { border-color: var(--admin-accent-color); }
-        .theme-admin button { background-color: var(--primary-color); color: white; border: 2px solid var(--admin-accent-color); }
-        .theme-admin #logoutBtn { border: none; background-color: #c0392b; }
+        .admin-nav button { display: block; width: 100%; margin-bottom: 10px; text-align: left; background-color: transparent; border: 1px solid transparent; }
+        
+        /* MOTYW CIEMNY ADMINA */
+        .theme-admin.motyw-ciemny { background-color: var(--dark-bg); color: var(--dark-text); }
+        .theme-admin.motyw-ciemny .app-header { background-color: var(--admin-primary-color); color: var(--dark-text); }
+        .theme-admin.motyw-ciemny .app-header strong { color: var(--admin-accent-color); }
+        .theme-admin.motyw-ciemny .admin-nav { background-color: var(--dark-surface); border-right: 2px solid var(--admin-accent-color); }
+        .theme-admin.motyw-ciemny .admin-nav button { color: var(--dark-text); }
+        .theme-admin.motyw-ciemny .admin-nav button.active { background-color: var(--admin-primary-color); border-color: var(--admin-accent-color); font-weight: bold; }
+        .theme-admin.motyw-ciemny .grid-item { background-color: var(--dark-surface); border: none; padding: 0; }
+        .theme-admin.motyw-ciemny .grid-item > h4 { padding: 20px 20px 10px 20px; }
+        .theme-admin.motyw-ciemny .grid-item > *:not(h4) { padding: 0 20px 20px 20px; }
+        .theme-admin.motyw-ciemny h4 { border-color: var(--admin-accent-color); color: var(--admin-accent-color); }
+        .theme-admin.motyw-ciemny strong, .theme-admin.motyw-ciemny small, .theme-admin.motyw-ciemny span, .theme-admin.motyw-ciemny p, .theme-admin.motyw-ciemny li, .theme-admin.motyw-ciemny label { color: var(--dark-text); }
+        .theme-admin.motyw-ciemny .app-header strong { color: var(--admin-accent-color); }
+        .theme-admin.motyw-ciemny input, .theme-admin.motyw-ciemny select { background-color: var(--dark-bg); color: var(--dark-text); border-color: var(--admin-accent-color); }
+        .theme-admin.motyw-ciemny table, .theme-admin.motyw-ciemny th, .theme-admin.motyw-ciemny td { border-color: var(--admin-accent-color); }
+        .theme-admin.motyw-ciemny li { border-color: var(--admin-accent-color); }
+        .theme-admin.motyw-ciemny button { background-color: var(--admin-primary-color); color: white; border: 2px solid var(--admin-accent-color); }
+        .theme-admin.motyw-ciemny #logoutBtn { border: none; background-color: #c0392b; }
+
+        /* MOTYW JASNY ADMINA */
+        .theme-admin.motyw-jasny { background-color: var(--light-bg); color: var(--light-text); }
+        .theme-admin.motyw-jasny .app-header { background-color: var(--admin-primary-color); color: var(--light-bg); }
+        .theme-admin.motyw-jasny .app-header strong { color: var(--admin-accent-color); }
+        .theme-admin.motyw-jasny .admin-nav { background-color: #f1f1f1; border-right: 2px solid var(--admin-primary-color); }
+        .theme-admin.motyw-jasny .admin-nav button { color: var(--light-text); }
+        .theme-admin.motyw-jasny .admin-nav button.active { background-color: var(--admin-primary-color); border-color: var(--admin-accent-color); color: var(--light-bg); font-weight: bold; }
+        .theme-admin.motyw-jasny .grid-item { background-color: #fafafa; border: 1px solid #eee; }
+        .theme-admin.motyw-jasny h4 { border-color: #eee; color: var(--admin-primary-color); }
+        .theme-admin.motyw-jasny strong, .theme-admin.motyw-jasny small, .theme-admin.motyw-jasny span, .theme-admin.motyw-jasny p, .theme-admin.motyw-jasny li, .theme-admin.motyw-jasny label { color: var(--light-text); }
+        .theme-admin.motyw-jasny .app-header strong { color: var(--admin-accent-color); }
+        .theme-admin.motyw-jasny input, .theme-admin.motyw-jasny select { background-color: var(--light-bg); color: var(--light-text); border-color: #ccc; }
+        .theme-admin.motyw-jasny table, .theme-admin.motyw-jasny th, .theme-admin.motyw-jasny td { border-color: #ddd; }
+        .theme-admin.motyw-jasny li { border-color: #eee; }
+        .theme-admin.motyw-jasny button { background-color: var(--admin-primary-color); color: var(--light-bg); border: 2px solid var(--admin-accent-color); }
+        .theme-admin.motyw-jasny #logoutBtn { border: none; background-color: #c0392b; }
         
         @media (max-width: 768px) {
             .admin-layout { flex-direction: column; }
@@ -659,11 +683,9 @@
             const root = document.documentElement;
             root.style.setProperty('--primary-color', appSettings.czlonek_kolor_glowny);
             root.style.setProperty('--secondary-color', appSettings.podstawowy_kolor_glowny);
+            root.style.setProperty('--admin-primary-color', appSettings.admin_kolor_glowny);
             root.style.setProperty('--admin-accent-color', appSettings.admin_kolor_akcentu);
             
-            const adminHeader = document.querySelector('.theme-admin .app-header');
-            if(adminHeader) adminHeader.style.backgroundColor = appSettings.admin_kolor_glowny;
-
             // Ustawienie tła dla inputów typu color
             const colorInputs = document.querySelectorAll('input[type="color"]');
             colorInputs.forEach(input => {
