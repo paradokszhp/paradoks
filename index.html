@@ -27,8 +27,8 @@
             margin: 0;
             font-family: var(--font-family);
         }
-        /* --- KONTENER CENTRUJĄCY DLA WIDOKU LOGOWANIA --- */
-        #authContainer {
+        /* --- KONTENERY WIDOKÓW --- */
+        .view-container {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -37,7 +37,7 @@
             box-sizing: border-box;
             background-color: #f4f7f9;
         }
-        .auth-form {
+        .form-container {
             width: 100%;
             max-width: 400px;
             background-color: white;
@@ -109,11 +109,11 @@
         button:hover, .button-link:hover {
             transform: translateY(-2px);
         }
-        #loginBtn {
+        #loginBtn, #registerBtnConfirm {
             background-color: var(--primary-color);
             color: white;
         }
-        #registerBtn {
+        #showRegisterBtn, #backToLoginBtn {
             background-color: var(--secondary-color);
             color: white;
         }
@@ -146,9 +146,11 @@
         ul { list-style-type: none; padding: 0; }
         li { padding: 10px; border-bottom: 1px solid #eee; }
 
-        /* --- MOTYWY I KOLORY --- */
+        /* --- MOTYWY TŁA --- */
+        .motyw-jasny { background-color: var(--light-bg); color: var(--light-text); }
+        .motyw-ciemny { background-color: var(--dark-bg); color: var(--dark-text); }
         
-        /* PODSTAWOWY - JASNY */
+        /* --- KOLORYSTYKA PANELI --- */
         .theme-podstawowy.motyw-jasny { background-color: var(--light-bg); color: var(--light-text); }
         .theme-podstawowy.motyw-jasny .app-header { background-color: var(--secondary-color); color: var(--light-bg); }
         .theme-podstawowy.motyw-jasny .grid-item { background-color: #fafafa; border-color: #eee;}
@@ -157,7 +159,6 @@
         .theme-podstawowy.motyw-jasny button, .theme-podstawowy.motyw-jasny .button-link { background-color: var(--secondary-color); color: var(--light-bg); }
         .theme-podstawowy.motyw-jasny #logoutBtn { background-color: #c0392b; }
 
-        /* PODSTAWOWY - CIEMNY */
         .theme-podstawowy.motyw-ciemny { background-color: var(--dark-bg); color: var(--dark-text); }
         .theme-podstawowy.motyw-ciemny .app-header { background-color: var(--secondary-color); color: var(--light-bg); }
         .theme-podstawowy.motyw-ciemny .grid-item { background-color: var(--dark-surface); border-color: var(--secondary-color); }
@@ -170,7 +171,6 @@
         .theme-podstawowy.motyw-ciemny button, .theme-podstawowy.motyw-ciemny .button-link { background-color: var(--secondary-color); color: var(--light-bg); }
         .theme-podstawowy.motyw-ciemny #logoutBtn { background-color: #c0392b; }
 
-        /* CZLONEK - CIEMNY */
         .theme-czlonek.motyw-ciemny { background-color: var(--dark-bg); color: var(--dark-text); }
         .theme-czlonek.motyw-ciemny .app-header { background-color: var(--primary-color); color: var(--dark-text); }
         .theme-czlonek.motyw-ciemny .grid-item { background-color: var(--dark-surface); border-color: var(--primary-color); }
@@ -183,7 +183,6 @@
         .theme-czlonek.motyw-ciemny .button-link { border: 1px solid var(--primary-color); }
         .theme-czlonek.motyw-ciemny #logoutBtn { background-color: #c0392b; }
 
-        /* CZLONEK - JASNY */
         .theme-czlonek.motyw-jasny { background-color: var(--light-bg); color: var(--light-text); }
         .theme-czlonek.motyw-jasny .app-header { background-color: var(--primary-color); color: var(--dark-text); }
         .theme-czlonek.motyw-jasny .grid-item { background-color: #fafafa; border-color: var(--primary-color); }
@@ -250,18 +249,34 @@
 </head>
 <body>
 
-    <div id="authContainer">
-        <div class="auth-form">
+    <div id="authContainer" class="view-container">
+        <div class="form-container">
             <h1>Witaj w Klubie!</h1>
-            <form id="authForm">
+            <form id="loginForm">
                 <input type="text" id="imie" placeholder="Imię" required>
                 <input type="text" id="nazwisko" placeholder="Nazwisko" required>
                 <div class="button-group">
                     <button type="button" id="loginBtn">Zaloguj</button>
-                    <button type="button" id="registerBtn">Zarejestruj</button>
+                    <button type="button" id="showRegisterBtn">Zarejestruj</button>
                 </div>
             </form>
             <div id="message"></div>
+        </div>
+    </div>
+
+    <div id="registerContainer" class="view-container" style="display: none;">
+        <div class="form-container">
+            <h1>Stwórz Nowe Konto</h1>
+            <form id="registerForm">
+                <input type="text" id="registerImie" placeholder="Imię" required>
+                <input type="text" id="registerNazwisko" placeholder="Nazwisko" required>
+                <input type="tel" id="registerTelefon" placeholder="Numer telefonu (opcjonalnie)">
+                <div class="button-group">
+                    <button type="button" id="registerBtnConfirm">Zarejestruj</button>
+                    <button type="button" id="backToLoginBtn">Wróć do logowania</button>
+                </div>
+            </form>
+            <div id="registerMessage"></div>
         </div>
     </div>
 
@@ -277,22 +292,20 @@
 
         // --- ELEMENTY DOM ---
         const authContainer = document.getElementById('authContainer');
+        const registerContainer = document.getElementById('registerContainer');
         const appScreen = document.getElementById('appScreen');
         const messageDiv = document.querySelector('#authContainer #message');
-        const loginBtn = document.getElementById('loginBtn');
-        const registerBtn = document.getElementById('registerBtn');
-        const imieInput = document.getElementById('imie');
-        const nazwiskoInput = document.getElementById('nazwisko');
-        const authForm = document.getElementById('authForm');
-
+        const registerMessageDiv = document.querySelector('#registerContainer #registerMessage');
+        
         // --- STAN APLIKACJI ---
         let currentUser = null;
         let appSettings = {};
 
-        // --- GŁÓWNE FUNKCJE LOGOWANIA ---
-        function showMessage(text, type = 'error') {
-            messageDiv.textContent = text;
-            messageDiv.className = type === 'error' ? 'message-error' : 'message-success';
+        // --- GŁÓWNE FUNKCJE ---
+        function showMessage(text, type = 'error', target = 'login') {
+            const div = target === 'login' ? messageDiv : registerMessageDiv;
+            div.textContent = text;
+            div.className = type === 'error' ? 'message-error' : 'message-success';
         }
 
         async function fetchAppSettings() {
@@ -312,8 +325,8 @@
         }
 
         async function loginUser() {
-            const imie = imieInput.value.trim();
-            const nazwisko = nazwiskoInput.value.trim();
+            const imie = document.getElementById('imie').value.trim();
+            const nazwisko = document.getElementById('nazwisko').value.trim();
             if (!imie || !nazwisko) { showMessage('Imię i nazwisko są wymagane.'); return; }
             showMessage('Logowanie...', 'success');
             try {
@@ -327,29 +340,28 @@
         }
 
         async function registerUser() {
-            const imie = imieInput.value.trim();
-            const nazwisko = nazwiskoInput.value.trim();
-            if (!imie || !nazwisko) { showMessage('Imię i nazwisko są wymagane.'); return; }
-            showMessage('Rejestracja...', 'success');
+            const imie = document.getElementById('registerImie').value.trim();
+            const nazwisko = document.getElementById('registerNazwisko').value.trim();
+            const telefon = document.getElementById('registerTelefon').value.trim();
+            if (!imie || !nazwisko) { showMessage('Imię i nazwisko są wymagane.', 'error', 'register'); return; }
+            showMessage('Rejestracja...', 'success', 'register');
             try {
                 const { data: existingUser } = await db.from('uzytkownicy').select('id').eq('imie', imie).eq('nazwisko', nazwisko);
                 if (existingUser && existingUser.length > 0) throw new Error('Użytkownik o takim imieniu i nazwisku już istnieje.');
-                const { data: newUser } = await db.from('uzytkownicy').insert([{ imie, nazwisko, poziom_uprawnien: 'podstawowy' }]).select().single();
+                const { data: newUser } = await db.from('uzytkownicy').insert([{ imie, nazwisko, numer_telefonu: telefon }]).select().single();
                 handleSuccessfulAuth(newUser);
             } catch (error) {
                 console.error('Błąd rejestracji:', error);
-                showMessage(error.message || 'Nie udało się utworzyć konta.');
+                showMessage(error.message || 'Nie udało się utworzyć konta.', 'error', 'register');
             }
         }
 
         function logoutUser() {
             currentUser = null;
             authContainer.style.display = 'flex';
+            registerContainer.style.display = 'none';
             appScreen.style.display = 'none';
             appScreen.innerHTML = '';
-            imieInput.value = '';
-            nazwiskoInput.value = '';
-            messageDiv.textContent = '';
         }
 
         // --- FUNKCJE RENDERUJĄCE POSZCZEGÓLNE MODUŁY ---
@@ -438,6 +450,7 @@
             const userRows = users.map(user => `
                 <tr>
                     <td>${user.imie} ${user.nazwisko}</td>
+                    <td>${user.numer_telefonu || 'Brak'}</td>
                     <td>
                         <select data-userid="${user.id}" class="permission-select">
                             <option value="podstawowy" ${user.poziom_uprawnien === 'podstawowy' ? 'selected' : ''}>Podstawowy</option>
@@ -447,7 +460,7 @@
                     </td>
                     <td>
                         <div class="button-group">
-                            <button class="edit-user-btn" data-userid="${user.id}" data-imie="${user.imie}" data-nazwisko="${user.nazwisko}">Edytuj</button>
+                            <button class="edit-user-btn" data-userid="${user.id}" data-imie="${user.imie}" data-nazwisko="${user.nazwisko}" data-telefon="${user.numer_telefonu || ''}">Edytuj</button>
                             <button class="delete-user-btn" data-userid="${user.id}">Usuń</button>
                         </div>
                     </td>
@@ -460,11 +473,12 @@
                     <form id="addUserForm">
                         <input type="text" id="newUserName" placeholder="Imię nowego użytkownika" required>
                         <input type="text" id="newUserSurname" placeholder="Nazwisko nowego użytkownika" required>
+                        <input type="tel" id="newUserPhone" placeholder="Numer telefonu (opcjonalnie)">
                         <button type="submit">Dodaj Użytkownika</button>
                     </form>
                     <hr>
                     <table>
-                        <thead><tr><th>Użytkownik</th><th>Poziom Uprawnień</th><th>Akcje</th></tr></thead>
+                        <thead><tr><th>Użytkownik</th><th>Telefon</th><th>Poziom Uprawnień</th><th>Akcje</th></tr></thead>
                         <tbody>${userRows}</tbody>
                     </table>
                 </div>
@@ -643,6 +657,7 @@
             if (!currentUser) { logoutUser(); return; }
             
             authContainer.style.display = 'none';
+            registerContainer.style.display = 'none';
             appScreen.style.display = 'block';
             appScreen.innerHTML = '<h2>Ładowanie panelu...</h2>';
 
@@ -722,9 +737,18 @@
 
         // --- OBSŁUGA ZDARZEŃ ---
         function setupEventListeners() {
-            loginBtn.addEventListener('click', loginUser);
-            registerBtn.addEventListener('click', registerUser);
-            authForm.addEventListener('submit', (e) => { e.preventDefault(); loginUser(); });
+            document.getElementById('loginBtn').addEventListener('click', loginUser);
+            document.getElementById('showRegisterBtn').addEventListener('click', () => {
+                authContainer.style.display = 'none';
+                registerContainer.style.display = 'flex';
+            });
+            document.getElementById('registerBtnConfirm').addEventListener('click', registerUser);
+            document.getElementById('backToLoginBtn').addEventListener('click', () => {
+                registerContainer.style.display = 'none';
+                authContainer.style.display = 'flex';
+            });
+            document.getElementById('loginForm').addEventListener('submit', (e) => { e.preventDefault(); loginUser(); });
+            document.getElementById('registerForm').addEventListener('submit', (e) => { e.preventDefault(); registerUser(); });
 
             appScreen.addEventListener('click', async (e) => {
                 const target = e.target;
@@ -780,8 +804,9 @@
                 if (target.matches('.edit-user-btn')) {
                     const newImie = prompt('Podaj nowe imię:', target.dataset.imie);
                     const newNazwisko = prompt('Podaj nowe nazwisko:', target.dataset.nazwisko);
+                    const newTelefon = prompt('Podaj nowy numer telefonu:', target.dataset.telefon);
                     if (newImie && newNazwisko) {
-                        await db.from('uzytkownicy').update({ imie: newImie, nazwisko: newNazwisko }).eq('id', target.dataset.userid);
+                        await db.from('uzytkownicy').update({ imie: newImie, nazwisko: newNazwisko, numer_telefonu: newTelefon }).eq('id', target.dataset.userid);
                         renderApp();
                     }
                 }
@@ -855,7 +880,8 @@
                 if (formId === 'addUserForm') {
                     const name = document.getElementById('newUserName').value;
                     const surname = document.getElementById('newUserSurname').value;
-                    await db.from('uzytkownicy').insert({ imie: name, nazwisko: surname });
+                    const phone = document.getElementById('newUserPhone').value;
+                    await db.from('uzytkownicy').insert({ imie: name, nazwisko: surname, numer_telefonu: phone });
                     renderApp();
                 }
                 if (formId === 'settingsForm') {
