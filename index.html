@@ -270,7 +270,7 @@
             <form id="registerForm">
                 <input type="text" id="registerImie" placeholder="Imię" required>
                 <input type="text" id="registerNazwisko" placeholder="Nazwisko" required>
-                <input type="tel" id="registerTelefon" placeholder="Numer telefonu (opcjonalnie)">
+                <input type="tel" id="registerTelefon" placeholder="Numer telefonu" required>
                 <div class="button-group">
                     <button type="button" id="registerBtnConfirm">Zarejestruj</button>
                     <button type="button" id="backToLoginBtn">Wróć do logowania</button>
@@ -343,7 +343,7 @@
             const imie = document.getElementById('registerImie').value.trim();
             const nazwisko = document.getElementById('registerNazwisko').value.trim();
             const telefon = document.getElementById('registerTelefon').value.trim();
-            if (!imie || !nazwisko) { showMessage('Imię i nazwisko są wymagane.', 'error', 'register'); return; }
+            if (!imie || !nazwisko || !telefon) { showMessage('Wszystkie pola są wymagane.', 'error', 'register'); return; }
             showMessage('Rejestracja...', 'success', 'register');
             try {
                 const { data: existingUser } = await db.from('uzytkownicy').select('id').eq('imie', imie).eq('nazwisko', nazwisko);
@@ -473,7 +473,7 @@
                     <form id="addUserForm">
                         <input type="text" id="newUserName" placeholder="Imię nowego użytkownika" required>
                         <input type="text" id="newUserSurname" placeholder="Nazwisko nowego użytkownika" required>
-                        <input type="tel" id="newUserPhone" placeholder="Numer telefonu (opcjonalnie)">
+                        <input type="tel" id="newUserPhone" placeholder="Numer telefonu" required>
                         <button type="submit">Dodaj Użytkownika</button>
                     </form>
                     <hr>
@@ -803,11 +803,17 @@
                 // --- AKCJE EDYCJI ---
                 if (target.matches('.edit-user-btn')) {
                     const newImie = prompt('Podaj nowe imię:', target.dataset.imie);
+                    if (newImie === null) return;
                     const newNazwisko = prompt('Podaj nowe nazwisko:', target.dataset.nazwisko);
+                    if (newNazwisko === null) return;
                     const newTelefon = prompt('Podaj nowy numer telefonu:', target.dataset.telefon);
-                    if (newImie && newNazwisko) {
+                    if (newTelefon === null) return;
+
+                    if (newImie.trim() && newNazwisko.trim() && newTelefon.trim()) {
                         await db.from('uzytkownicy').update({ imie: newImie, nazwisko: newNazwisko, numer_telefonu: newTelefon }).eq('id', target.dataset.userid);
                         renderApp();
+                    } else {
+                        alert("Wszystkie pola muszą być wypełnione.");
                     }
                 }
                 if (target.matches('.edit-game-btn')) {
