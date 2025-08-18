@@ -146,29 +146,56 @@
         ul { list-style-type: none; padding: 0; }
         li { padding: 10px; border-bottom: 1px solid #eee; }
 
-        /* --- MOTYWY TŁA --- */
-        .motyw-jasny { background-color: var(--light-bg); color: var(--light-text); }
-        .motyw-ciemny { background-color: var(--dark-bg); color: var(--dark-text); }
+        /* --- MOTYWY I KOLORY --- */
         
-        /* --- KOLORYSTYKA PANELI --- */
-        .theme-podstawowy .app-header { background-color: var(--secondary-color); color: var(--light-bg); }
-        .theme-podstawowy .grid-item { background-color: #fafafa; border-color: #eee;}
-        .theme-podstawowy h4 { border-color: #eee; color: var(--light-text); }
-        .theme-podstawowy .app-header strong, .theme-podstawowy .app-header small, .theme-podstawowy .app-header span { color: var(--light-bg); }
-        .theme-podstawowy button, .theme-podstawowy .button-link { background-color: var(--secondary-color); color: var(--light-bg); }
-        .theme-podstawowy #logoutBtn { background-color: #c0392b; }
+        /* PODSTAWOWY - JASNY */
+        .theme-podstawowy.motyw-jasny { background-color: var(--light-bg); color: var(--light-text); }
+        .theme-podstawowy.motyw-jasny .app-header { background-color: var(--secondary-color); color: var(--light-bg); }
+        .theme-podstawowy.motyw-jasny .grid-item { background-color: #fafafa; border-color: #eee;}
+        .theme-podstawowy.motyw-jasny h4 { border-color: #eee; color: var(--light-text); }
+        .theme-podstawowy.motyw-jasny .app-header strong, .theme-podstawowy.motyw-jasny .app-header small, .theme-podstawowy.motyw-jasny .app-header span { color: var(--light-bg); }
+        .theme-podstawowy.motyw-jasny button, .theme-podstawowy.motyw-jasny .button-link { background-color: var(--secondary-color); color: var(--light-bg); }
+        .theme-podstawowy.motyw-jasny #logoutBtn { background-color: #c0392b; }
 
+        /* PODSTAWOWY - CIEMNY */
+        .theme-podstawowy.motyw-ciemny { background-color: var(--dark-bg); color: var(--dark-text); }
+        .theme-podstawowy.motyw-ciemny .app-header { background-color: var(--secondary-color); color: var(--light-bg); }
+        .theme-podstawowy.motyw-ciemny .grid-item { background-color: var(--dark-surface); border-color: var(--secondary-color); }
+        .theme-podstawowy.motyw-ciemny h4 { border-color: var(--secondary-color); color: var(--dark-text); }
+        .theme-podstawowy.motyw-ciemny strong, .theme-podstawowy.motyw-ciemny small, .theme-podstawowy.motyw-ciemny span, .theme-podstawowy.motyw-ciemny p, .theme-podstawowy.motyw-ciemny li, .theme-podstawowy.motyw-ciemny label { color: var(--dark-text); }
+        .theme-podstawowy.motyw-ciemny .app-header strong, .theme-podstawowy.motyw-ciemny .app-header small, .theme-podstawowy.motyw-ciemny .app-header span { color: var(--light-bg); }
+        .theme-podstawowy.motyw-ciemny input, .theme-podstawowy.motyw-ciemny select { background-color: var(--dark-bg); color: var(--dark-text); border-color: var(--secondary-color); }
+        .theme-podstawowy.motyw-ciemny table, .theme-podstawowy.motyw-ciemny th, .theme-podstawowy.motyw-ciemny td { border-color: var(--secondary-color); }
+        .theme-podstawowy.motyw-ciemny li { border-color: var(--secondary-color); }
+        .theme-podstawowy.motyw-ciemny button, .theme-podstawowy.motyw-ciemny .button-link { background-color: var(--secondary-color); color: var(--light-bg); }
+        .theme-podstawowy.motyw-ciemny #logoutBtn { background-color: #c0392b; }
 
-        .theme-czlonek .app-header { background-color: var(--primary-color); color: var(--dark-text); }
-        .theme-czlonek .grid-item { background-color: var(--dark-surface); border-color: var(--primary-color); }
-        .theme-czlonek h4 { border-color: var(--primary-color); color: var(--dark-text); }
-        .theme-czlonek strong, .theme-czlonek small, .theme-czlonek span, .theme-czlonek p, .theme-czlonek li, .theme-czlonek label { color: var(--dark-text); }
-        .theme-czlonek input, .theme-czlonek select { background-color: var(--dark-bg); color: var(--dark-text); border-color: var(--primary-color); }
-        .theme-czlonek table, .theme-czlonek th, .theme-czlonek td { border-color: var(--primary-color); }
-        .theme-czlonek li { border-color: var(--primary-color); }
-        .theme-czlonek button, .theme-czlonek .button-link { background-color: var(--primary-color); color: var(--dark-text); }
-        .theme-czlonek .button-link { border: 1px solid var(--primary-color); }
-        .theme-czlonek #logoutBtn { background-color: #c0392b; }
+        /* CZLONEK - CIEMNY */
+        .theme-czlonek.motyw-ciemny { background-color: var(--dark-bg); color: var(--dark-text); }
+        .theme-czlonek.motyw-ciemny .app-header { background-color: var(--primary-color); color: var(--dark-text); }
+        .theme-czlonek.motyw-ciemny .grid-item { background-color: var(--dark-surface); border-color: var(--primary-color); }
+        .theme-czlonek.motyw-ciemny h4 { border-color: var(--primary-color); color: var(--dark-text); }
+        .theme-czlonek.motyw-ciemny strong, .theme-czlonek.motyw-ciemny small, .theme-czlonek.motyw-ciemny span, .theme-czlonek.motyw-ciemny p, .theme-czlonek.motyw-ciemny li, .theme-czlonek.motyw-ciemny label { color: var(--dark-text); }
+        .theme-czlonek.motyw-ciemny input, .theme-czlonek.motyw-ciemny select { background-color: var(--dark-bg); color: var(--dark-text); border-color: var(--primary-color); }
+        .theme-czlonek.motyw-ciemny table, .theme-czlonek.motyw-ciemny th, .theme-czlonek.motyw-ciemny td { border-color: var(--primary-color); }
+        .theme-czlonek.motyw-ciemny li { border-color: var(--primary-color); }
+        .theme-czlonek.motyw-ciemny button, .theme-czlonek.motyw-ciemny .button-link { background-color: var(--primary-color); color: var(--dark-text); }
+        .theme-czlonek.motyw-ciemny .button-link { border: 1px solid var(--primary-color); }
+        .theme-czlonek.motyw-ciemny #logoutBtn { background-color: #c0392b; }
+
+        /* CZLONEK - JASNY */
+        .theme-czlonek.motyw-jasny { background-color: var(--light-bg); color: var(--light-text); }
+        .theme-czlonek.motyw-jasny .app-header { background-color: var(--primary-color); color: var(--dark-text); }
+        .theme-czlonek.motyw-jasny .grid-item { background-color: #fafafa; border-color: var(--primary-color); }
+        .theme-czlonek.motyw-jasny h4 { border-color: var(--primary-color); color: var(--primary-color); }
+        .theme-czlonek.motyw-jasny strong, .theme-czlonek.motyw-jasny small, .theme-czlonek.motyw-jasny span, .theme-czlonek.motyw-jasny p, .theme-czlonek.motyw-jasny li, .theme-czlonek.motyw-jasny label { color: var(--light-text); }
+        .theme-czlonek.motyw-jasny .app-header strong, .theme-czlonek.motyw-jasny .app-header small, .theme-czlonek.motyw-jasny .app-header span { color: var(--dark-text); }
+        .theme-czlonek.motyw-jasny input, .theme-czlonek.motyw-jasny select { background-color: var(--light-bg); color: var(--light-text); border-color: #ccc; }
+        .theme-czlonek.motyw-jasny table, .theme-czlonek.motyw-jasny th, .theme-czlonek.motyw-jasny td { border-color: #ddd; }
+        .theme-czlonek.motyw-jasny li { border-color: #eee; }
+        .theme-czlonek.motyw-jasny button, .theme-czlonek.motyw-jasny .button-link { background-color: var(--primary-color); color: var(--dark-text); }
+        .theme-czlonek.motyw-jasny .button-link { border: 1px solid var(--primary-color); }
+        .theme-czlonek.motyw-jasny #logoutBtn { background-color: #c0392b; }
 
         /* --- UKŁAD KART I MOTYWY ADMINISTRATORA --- */
         .admin-layout { display: flex; flex-direction: row; min-height: calc(100vh - 85px); }
