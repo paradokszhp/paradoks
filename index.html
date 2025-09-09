@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klub Planszówkowy</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --kolor-glowny-podstawowy: #a6ce39;
+            --kolor-glowny-czlonek: #642888;
+            --kolor-glowny-admin: #642888;
+            --kolor-akcentu-admin: #FFD700;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+            transition: background-color 0.3s;
+        }
+
+        /* --- Ekran Logowania i Rejestracji --- */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .auth-form {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            /* === POPRAWKA 1 === */
+            /* Dodajemy tę właściwość, aby elementy w formularzu (nagłówek, pola, przyciski) */
+            /* układały się w kolumnie, gdy JavaScript ustawi mu 'display: flex'. */
+            flex-direction: column;
+        }
+
+        .auth-form h1 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+            /* === POPRAWKA 2 === */
+            /* Ustawiamy pełną szerokość, aby pole input wraz z ikoną */
+            /* poprawnie wypełniało kontener formularza. */
+            width: 100%;
+        }
+        
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 14px 14px 14px 45px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .auth-form input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+
+        .auth-form button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #loginButton {
+            background-color: #007bff;
+        }
+        #loginButton:hover {
+            background-color: #0056b3;
+        }
+        #goToRegisterButton {
+            background-color: #6c757d;
+            margin-top: 10px;
+        }
+
+        #registerButton {
+            background-color: #28a745;
+        }
+        #backToLoginButton {
+            background-color: #6c757d;
+            margin-top: 10px;
+        }
+
+        #errorMessage, #regErrorMessage {
+            color: #dc3545;
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 20px;
+        }
+        
+        .terms-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        .terms-container input {
+            width: auto;
+            margin: 0 10px 0 0;
+        }
+        .terms-container label {
+            color: #666;
+        }
+        .terms-container a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .terms-container a:hover {
+            text-decoration: underline;
+        }
+        
+        /* --- Panel Aplikacji --- */
+        .app-panel {
+            display: none; /* Domyślnie ukryty */
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .app-header {
+            padding: 15px 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .app-header .user-info {
+            text-align: right;
+        }
+
+        .app-header .user-info span {
+            display: block;
+        }
+        .app-header .user-info span:first-child {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .app-header button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .app-content {
+            flex-grow: 1;
+            padding: 25px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .grid-item {
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .grid-item h3 {
+            margin-top: 0;
+            border-bottom: 2px solid;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid;
+            text-align: left;
+        }
+        form { display: flex; flex-direction: column; gap: 10px; }
+        input, select, button {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        .modal {
+            display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888;
+            width: 80%; max-width: 500px; border-radius: 10px;
+        }
+        
+        /* Styl dla input[type=color] */
+        input[type="color"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 44px;
+            height: 28px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border-radius: 6px;
+            border: 2px solid #ccc;
+        }
+        input[type="color"]::-moz-color-swatch {
+            border-radius: 6px;
+            border: 2px solid #ccc;
+        }
+
+
+        /* --- Motywy --- */
+
+        /* Panel Podstawowy */
+        body.podstawowy-jasny { background-color: #ffffff; color: #333; }
+        body.podstawowy-jasny .grid-item { background-color: #f9f9f9; border: 1px solid #e0e0e0; }
+        body.podstawowy-jasny .grid-item h3 { border-color: var(--kolor-glowny-podstawowy); color: var(--kolor-glowny-podstawowy); }
+        body.podstawowy-jasny th, body.podstawowy-jasny td { border-color: #ddd; }
+        body.podstawowy-jasny button { background-color: var(--kolor-glowny-podstawowy); color: white; border-color: var(--kolor-glowny-podstawowy); }
+
+        body.podstawowy-ciemny { background-color: #121212; color: #e0e0e0; }
+        body.podstawowy-ciemny .grid-item { background-color: #1e1e1e; border: 1px solid #333; }
+        body.podstawowy-ciemny .grid-item h3 { border-color: var(--kolor-glowny-podstawowy); color: var(--kolor-glowny-podstawowy); }
+        body.podstawowy-ciemny th, body.podstawowy-ciemny td { border-color: #444; }
+        body.podstawowy-ciemny button { background-color: var(--kolor-glowny-podstawowy); color: white; border-color: var(--kolor-glowny-podstawowy); }
+        body.podstawowy-ciemny input, body.podstawowy-ciemny select { background-color: #333; color: #e0e0e0; border-color: #555; }
+        
+        /* Panel Członka Klubu */
+        body.czlonek-jasny { background-color: #ffffff; color: #333; }
+        body.czlonek-jasny .grid-item { background-color: #f9f9f9; border: 1px solid #e0e0e0; }
+        body.czlonek-jasny .grid-item h3 { border-color: var(--kolor-glowny-czlonek); color: var(--kolor-glowny-czlonek); }
+        body.czlonek-jasny th, body.czlonek-jasny td { border-color: #ddd; }
+        body.czlonek-jasny button { background-color: var(--kolor-glowny-czlonek); color: white; border-color: var(--kolor-glowny-czlonek); }
+        body.czlonek-jasny .file-list a { background-color: #eee; color: #333; }
+        
+        body.czlonek-ciemny { background-color: #1e1e2f; color: #f0f0f0; }
+        body.czlonek-ciemny .grid-item { background-color: #2c2c3e; border: 1px solid var(--kolor-glowny-czlonek); }
+        body.czlonek-ciemny .grid-item h3 { border-color: var(--kolor-glowny-czlonek); color: #f0f0f0; }
+        body.czlonek-ciemny th, body.czlonek-ciemny td { border-color: #444; }
+        body.czlonek-ciemny button { background-color: var(--kolor-glowny-czlonek); color: white; border-color: var(--kolor-glowny-czlonek); }
+        body.czlonek-ciemny input, body.czlonek-ciemny select { background-color: #3a3a50; color: #f0f0f0; border-color: var(--kolor-glowny-czlonek); }
+        body.czlonek-ciemny .file-list a { background-color: #3a3a50; color: #f0f0f0; }
+        
+        /* Panel Administratora */
+        .admin-panel-layout { display: flex; flex-direction: row; height: 100%; }
+        .admin-nav { display: flex; flex-direction: column; background-color: #2c2c3e; padding: 15px; min-width: 200px; }
+        .admin-nav-link { background: none; border: none; color: white; text-align: left; padding: 15px; font-size: 1em; border-radius: 6px; margin-bottom: 5px; cursor: pointer; }
+        .admin-nav-link.active { background-color: var(--kolor-glowny-admin); }
+        .admin-content { flex-grow: 1; padding: 25px; overflow-y: auto; }
+        .admin-tab-pane { display: none; }
+        .admin-tab-pane.active { display: block; }
+        
+        body.admin-jasny { background-color: #f4f7fc; color: #333; }
+        body.admin-jasny .admin-nav { background-color: #ffffff; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
+        body.admin-jasny .admin-nav-link { color: #333; }
+        body.admin-jasny .admin-nav-link.active { color: white; }
+        body.admin-jasny .admin-content { background-color: #f4f7fc; }
+        body.admin-jasny .admin-content h3 { color: var(--kolor-glowny-admin); border-bottom: 2px solid var(--kolor-glowny-admin); padding-bottom: 10px; }
+        body.admin-jasny table, body.admin-jasny th, body.admin-jasny td { border-color: #e0e0e0; }
+        body.admin-jasny button { background-color: var(--kolor-glowny-admin); color: white; border: none; }
+        body.admin-jasny button.edit-btn { background-color: var(--kolor-akcentu-admin); color: #333; }
+        body.admin-jasny button.delete-btn { background-color: #dc3545; }
+        body.admin-jasny input, body.admin-jasny select { background-color: #fff; color: #333; border: 1px solid #ccc; }
+        body.admin-jasny input[type="color"]::-webkit-color-swatch { border-color: #ccc; }
+
+        body.admin-ciemny { background-color: #1e1e2f; color: #f0f0f0; }
+        body.admin-ciemny .admin-nav { background-color: #252535; }
+        body.admin-ciemny .admin-content { background-color: #1e1e2f; }
+        body.admin-ciemny .admin-content h3 { color: var(--kolor-akcentu-admin); border-bottom: 2px solid var(--kolor-glowny-admin); padding-bottom: 10px; }
+        body.admin-ciemny table, body.admin-ciemny th, body.admin-ciemny td { border-color: #444; }
+        body.admin-ciemny button { background-color: var(--kolor-glowny-admin); color: white; border: 1px solid var(--kolor-akcentu-admin); }
+        body.admin-ciemny button.edit-btn { background-color: var(--kolor-akcentu-admin); color: #111; border: none; }
+        body.admin-ciemny button.delete-btn { background-color: #dc3545; border: none; }
+        body.admin-ciemny input, body.admin-ciemny select { background-color: #2c2c3e; color: #f0f0f0; border: 1px solid var(--kolor-glowny-admin); }
+        body.admin-ciemny input[type="color"]::-webkit-color-swatch { border-color: var(--kolor-akcentu-admin); }
+
+        @media (max-width: 768px) {
+            .admin-panel-layout { flex-direction: column; }
+            .admin-nav { flex-direction: row; overflow-x: auto; min-width: auto; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="authContainer" class="auth-container">
+        <!-- Ekran logowania -->
+        <div id="loginScreen" class="auth-form">
+            <h1>Logowanie</h1>
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="imie" placeholder="Imię">
+            </div>
+            <div class="input-group">
+                 <i class="fas fa-user"></i>
+                <input type="text" id="nazwisko" placeholder="Nazwisko">
+            </div>
+            <button id="loginButton">Zaloguj</button>
+            <button id="goToRegisterButton">Zarejestruj</button>
+            <p id="errorMessage"></p>
+        </div>
+
+        <!-- Ekran rejestracji -->
+        <div id="registerScreen" class="auth-form" style="display: none;">
+            <h1>Rejestracja</h1>
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="regImie" placeholder="Imię" required>
+            </div>
+             <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="regNazwisko" placeholder="Nazwisko" required>
+            </div>
+             <div class="input-group">
+                <i class="fas fa-phone"></i>
+                <input type="tel" id="regTelefon" placeholder="Numer telefonu" required>
+            </div>
+            <div class="terms-container">
+                <input type="checkbox" id="regRegulamin" required>
+                <label for="regRegulamin">Akceptuję <a href="#" id="linkDoRegulaminu" target="_blank">regulamin</a></label>
+            </div>
+            <button id="registerButton">Zarejestruj się</button>
+            <button id="backToLoginButton">Powrót do logowania</button>
+            <p id="regErrorMessage"></p>
+        </div>
+    </div>
+    
+    <div id="appPanel" class="app-panel">
+        <!-- Treść aplikacji będzie renderowana tutaj -->
+    </div>
+    
+    <!-- Modal do edycji -->
+    <div id="editModal" class="modal">
+      <div class="modal-content">
+        <span id="closeModal" style="float:right; cursor:pointer;">&times;</span>
+        <h2>Edytuj</h2>
+        <div id="editModalContent"></div>
+      </div>
+    </div>
+
+
+    <script>
+        // --- Konfiguracja Firebase ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBB71iRGlgtxlhcbQpMIlbLtRF96kRxZ-g",
+            authDomain: "klubplanszowkowy.firebaseapp.com",
+            projectId: "klubplanszowkowy",
+            storageBucket: "klubplanszowkowy.firebasestorage.app",
+            messagingSenderId: "727125718017",
+            appId: "1:727125718017:web:fdd4d6d1b30ae29b10bc00"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // --- Elementy DOM ---
+        const authContainer = document.getElementById('authContainer');
+        const loginScreen = document.getElementById('loginScreen');
+        const registerScreen = document.getElementById('registerScreen');
+        const appPanel = document.getElementById('appPanel');
+        const errorMessage = document.getElementById('errorMessage');
+        const regErrorMessage = document.getElementById('regErrorMessage');
+        
+        let currentUser = null;
+        let appSettings = {};
+        
+        // --- Nawigacja ---
+        document.getElementById('goToRegisterButton').addEventListener('click', async () => {
+            if (!Object.keys(appSettings).length) { // Fetch settings if not already loaded
+                await fetchAppSettings();
+            }
+            const linkRegulaminuEl = document.getElementById('linkDoRegulaminu');
+            if (linkRegulaminuEl) {
+                linkRegulaminuEl.href = appSettings.link_regulaminu || '#';
+            }
+            loginScreen.style.display = 'none';
+            registerScreen.style.display = 'flex';
+        });
+
+        document.getElementById('backToLoginButton').addEventListener('click', () => {
+            registerScreen.style.display = 'none';
+            loginScreen.style.display = 'flex';
+        });
+        
+        // --- Funkcje pomocnicze ---
+        function showMessage(element, message, isError = true) {
+            element.textContent = message;
+            element.style.color = isError ? '#dc3545' : '#28a745';
+        }
+
+        async function fetchAppSettings() {
+            try {
+                const settingsRef = db.collection('ustawienia').doc('global');
+                const doc = await settingsRef.get();
+                if (doc.exists) {
+                    appSettings = doc.data();
+                } else {
+                    console.log("Brak dokumentu z ustawieniami, tworzę domyślny.");
+                    const defaultSettings = {
+                        kod_do_klodki: "11111",
+                        link_regulaminu: "#",
+                        podstawowy_motyw: "jasny",
+                        podstawowy_kolor_glowny: "#a6ce39",
+                        czlonek_motyw: "ciemny",
+                        czlonek_kolor_glowny: "#642888",
+                        admin_motyw: "ciemny",
+                        admin_kolor_glowny: "#642888",
+                        admin_kolor_akcentu: "#FFD700"
+                    };
+                    await settingsRef.set(defaultSettings);
+                    appSettings = defaultSettings;
+                }
+                applyTheme();
+            } catch (error) {
+                console.error("Błąd podczas pobierania ustawień:", error);
+            }
+        }
+
+        function applyTheme() {
+            if (!currentUser) return;
+            let themeClass = '';
+            const root = document.documentElement;
+
+            root.style.setProperty('--kolor-glowny-podstawowy', appSettings.podstawowy_kolor_glowny);
+            root.style.setProperty('--kolor-glowny-czlonek', appSettings.czlonek_kolor_glowny);
+            root.style.setProperty('--kolor-glowny-admin', appSettings.admin_kolor_glowny);
+            root.style.setProperty('--kolor-akcentu-admin', appSettings.admin_kolor_akcentu);
+
+            switch (currentUser.poziom_uprawnien) {
+                case 'podstawowy':
+                    themeClass = `podstawowy-${appSettings.podstawowy_motyw}`;
+                    break;
+                case 'członek klubu':
+                    themeClass = `czlonek-${appSettings.czlonek_motyw}`;
+                    break;
+                case 'administrator':
+                    themeClass = `admin-${appSettings.admin_motyw}`;
+                    break;
+            }
+            document.body.className = themeClass;
+        }
+
+        function renderApp() {
+            if (!currentUser) return;
+            applyTheme();
+
+            switch (currentUser.poziom_uprawnien) {
+                case 'podstawowy':
+                    renderBasicPanel(currentUser);
+                    break;
+                case 'członek klubu':
+                    renderMemberPanel(currentUser);
+                    break;
+                case 'administrator':
+                    renderAdminPanel(currentUser);
+                    break;
+            }
+            authContainer.style.display = 'none';
+            appPanel.style.display = 'flex';
+        }
+
+        // --- Logowanie i Rejestracja ---
+        document.getElementById('loginButton').addEventListener('click', async () => {
+            const imie = document.getElementById('imie').value.trim();
+            const nazwisko = document.getElementById('nazwisko').value.trim();
+            if (!imie || !nazwisko) {
+                return showMessage(errorMessage, "Wszystkie pola są wymagane.");
+            }
+            try {
+                const snapshot = await db.collection('uzytkownicy')
+                    .where('imie', '==', imie)
+                    .where('nazwisko', '==', nazwisko)
+                    .limit(1)
+                    .get();
+
+                if (snapshot.empty) {
+                    return showMessage(errorMessage, "Nie znaleziono użytkownika.");
+                }
+                
+                currentUser = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+                sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                await fetchAppSettings();
+                renderApp();
+
+            } catch (error) {
+                console.error("Błąd logowania:", error);
+                showMessage(errorMessage, "Wystąpił błąd podczas logowania.");
+            }
+        });
+
+        document.getElementById('registerButton').addEventListener('click', async () => {
+            const imie = document.getElementById('regImie').value.trim();
+            const nazwisko = document.getElementById('regNazwisko').value.trim();
+            const numer_telefonu = document.getElementById('regTelefon').value.trim();
+            const regulaminChecked = document.getElementById('regRegulamin').checked;
+
+            if (!imie || !nazwisko || !numer_telefonu) {
+                return showMessage(regErrorMessage, "Wszystkie pola są wymagane.");
+            }
+            if (!regulaminChecked) {
+                return showMessage(regErrorMessage, "Musisz zaakceptować regulamin.");
+            }
+
+            try {
+                const snapshot = await db.collection('uzytkownicy')
+                    .where('imie', '==', imie)
+                    .where('nazwisko', '==', nazwisko)
+                    .get();
+
+                if (!snapshot.empty) {
+                    return showMessage(regErrorMessage, "Użytkownik o takim imieniu i nazwisku już istnieje.");
+                }
+
+                await db.collection('uzytkownicy').add({
+                    imie,
+                    nazwisko,
+                    numer_telefonu,
+                    poziom_uprawnien: 'podstawowy',
+                    data_rejestracji: new Date()
+                });
+                showMessage(regErrorMessage, "Rejestracja pomyślna! Możesz się teraz zalogować.", false);
+                setTimeout(() => {
+                    registerScreen.style.display = 'none';
+                    loginScreen.style.display = 'flex';
+                    document.getElementById('regRegulamin').checked = false; // Reset checkbox
+                }, 2000);
+
+            } catch (error) {
+                console.error("Błąd rejestracji:", error);
+                showMessage(regErrorMessage, "Wystąpił błąd podczas rejestracji.");
+            }
+        });
+
+        function logout() {
+            currentUser = null;
+            sessionStorage.removeItem('currentUser');
+            appPanel.innerHTML = '';
+            appPanel.style.display = 'none';
+            authContainer.style.display = 'flex';
+            loginScreen.style.display = 'flex';
+            registerScreen.style.display = 'none';
+            document.body.className = '';
+        }
+
+        // --- Funkcje renderujące panele ---
+        async function renderHeader(user) {
+            return `
+                <div class="app-header" style="background-color: ${getPrimaryColor(user.poziom_uprawnien)};">
+                    <div class="user-info">
+                        <span>${user.imie} ${user.nazwisko}</span>
+                        <small>${user.poziom_uprawnien}</small>
+                    </div>
+                    <div class="user-info">
+                        <span>Kod do kłódki: ${appSettings.kod_do_klodki}</span>
+                    </div>
+                    <button onclick="logout()">Wyloguj</button>
+                </div>
+            `;
+        }
+        
+        function getPrimaryColor(poziom) {
+            switch(poziom) {
+                case 'podstawowy': return appSettings.podstawowy_kolor_glowny;
+                case 'członek klubu': return appSettings.czlonek_kolor_glowny;
+                case 'administrator': return appSettings.admin_kolor_glowny;
+                default: return '#6c757d';
+            }
+        }
+
+        async function renderBasicPanel(user) {
+            const header = await renderHeader(user);
+            const myRentalsTable = await getMyRentalsTable(user.id);
+            const meetingsList = await getMeetingsList();
+
+            appPanel.innerHTML = `
+                ${header}
+                <div class="app-content">
+                    <div class="grid-container">
+                        <div class="grid-item">
+                            <h3>Wypożycz Grę</h3>
+                            <form id="wypozyczForm">
+                                <input type="number" id="numerGry" placeholder="Wpisz 4-cyfrowy numer gry" required>
+                                <button type="submit">Wypożycz</button>
+                            </form>
+                        </div>
+                        <div class="grid-item">
+                            <h3>Spotkania Klubu</h3>
+                            ${meetingsList}
+                        </div>
+                        <div class="grid-item">
+                            <h3>Moje Wypożyczone Gry</h3>
+                            ${myRentalsTable}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('wypozyczForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                wypozyczGre(user);
+            });
+        }
+        
+        async function renderMemberPanel(user) {
+            const header = await renderHeader(user);
+            const myRentalsTable = await getMyRentalsTable(user.id);
+            const meetingsList = await getMeetingsList();
+            const linksList = await getLinksList(false);
+
+            appPanel.innerHTML = `
+                ${header}
+                <div class="app-content">
+                    <div class="grid-container">
+                        <div class="grid-item">
+                            <h3>Wypożycz Grę</h3>
+                            <form id="wypozyczForm">
+                                <input type="number" id="numerGry" placeholder="Wpisz 4-cyfrowy numer gry" required>
+                                <button type="submit">Wypożycz</button>
+                            </form>
+                        </div>
+                         <div class="grid-item">
+                            <h3>Linki</h3>
+                            <div class="file-list">${linksList}</div>
+                        </div>
+                        <div class="grid-item">
+                            <h3>Spotkania Klubu</h3>
+                            ${meetingsList}
+                        </div>
+                        <div class="grid-item">
+                            <h3>Moje Wypożyczone Gry</h3>
+                            ${myRentalsTable}
+                        </div>
+                    </div>
+                </div>
+            `;
+             document.getElementById('wypozyczForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                wypozyczGre(user);
+            });
+        }
+        
+        async function renderAdminPanel(user, activeTab = 'admin-borrow') {
+            const header = await renderHeader(user);
+            const tabs = [
+                { id: 'admin-borrow', name: 'Wypożycz Grę' },
+                { id: 'admin-users', name: 'Użytkownicy' },
+                { id: 'admin-games', name: 'Gry' },
+                { id: 'admin-rentals', name: 'Wypożyczenia' },
+                { id: 'admin-links', name: 'Linki' },
+                { id: 'admin-meetings', name: 'Spotkania' },
+                { id: 'admin-settings', name: 'Ustawienia' }
+            ];
+
+            appPanel.innerHTML = `
+                ${header}
+                <div class="app-content admin-panel-layout">
+                    <nav class="admin-nav">
+                        ${tabs.map(tab => `<button class="admin-nav-link ${tab.id === activeTab ? 'active' : ''}" data-tab="${tab.id}">${tab.name}</button>`).join('')}
+                    </nav>
+                    <main class="admin-content">
+                        ${tabs.map(tab => `<div id="${tab.id}-content" class="admin-tab-pane ${tab.id === activeTab ? 'active' : ''}"></div>`).join('')}
+                    </main>
+                </div>
+            `;
+            
+            await renderAdminTabContent(activeTab, user, true); // Force re-render
+            
+            appPanel.querySelector('.admin-nav').addEventListener('click', async (e) => {
+                if (e.target.classList.contains('admin-nav-link')) {
+                    const tabId = e.target.dataset.tab;
+                    if (document.querySelector('.admin-nav-link.active')) {
+                        document.querySelector('.admin-nav-link.active').classList.remove('active');
+                    }
+                     if (document.querySelector('.admin-tab-pane.active')) {
+                        document.querySelector('.admin-tab-pane.active').classList.remove('active');
+                    }
+                    e.target.classList.add('active');
+                    document.querySelector(`#${tabId}-content`).classList.add('active');
+                    await renderAdminTabContent(tabId, user);
+                }
+            });
+        }
+        
+        async function renderAdminTabContent(tabId, user, forceRender = false) {
+            const contentEl = document.getElementById(`${tabId}-content`);
+            if (!contentEl) return;
+            if (contentEl.innerHTML.trim() !== '' && !forceRender) return;
+
+            switch(tabId) {
+                case 'admin-borrow':
+                    contentEl.innerHTML = `
+                        <h3>Wypożycz Grę</h3>
+                        <form id="wypozyczForm">
+                            <input type="number" id="numerGry" placeholder="Wpisz 4-cyfrowy numer gry" required>
+                            <button type="submit">Wypożycz</button>
+                        </form>
+                    `;
+                    document.getElementById('wypozyczForm').addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        wypozyczGre(user);
+                    });
+                    break;
+                case 'admin-users':
+                    contentEl.innerHTML = `<h3>Użytkownicy</h3><div id="usersTableContainer"></div>`;
+                    await refreshUsersTable();
+                    break;
+                case 'admin-games':
+                    contentEl.innerHTML = `<h3>Gry</h3><div id="gamesTableContainer"></div>`;
+                    await refreshGamesTable();
+                    break;
+                case 'admin-rentals':
+                    contentEl.innerHTML = `<h3>Historia Wypożyczeń</h3><div id="rentalsTableContainer"></div>`;
+                    await refreshRentalsTable(true);
+                    break;
+                case 'admin-links':
+                    contentEl.innerHTML = `<h3>Linki</h3><div id="linksTableContainer"></div>`;
+                    await refreshLinksTable();
+                    break;
+                case 'admin-meetings':
+                    contentEl.innerHTML = `<h3>Spotkania</h3><div id="meetingsTableContainer"></div>`;
+                    await refreshMeetingsTable();
+                    break;
+                case 'admin-settings':
+                    contentEl.innerHTML = `<h3>Ustawienia Aplikacji</h3><div id="settingsContainer"></div>`;
+                    await refreshSettingsForm();
+                    break;
+            }
+        }
+
+        // --- Logika biznesowa (wypożyczenia, zwroty etc.) ---
+        
+        async function wypozyczGre(user) {
+            const numerGry = parseInt(document.getElementById('numerGry').value, 10);
+            if (!numerGry) {
+                alert("Podaj numer gry.");
+                return;
+            }
+            try {
+                const gamesRef = db.collection('gry');
+                const gameSnapshot = await gamesRef.where('numer_gry', '==', numerGry).limit(1).get();
+                if (gameSnapshot.empty) {
+                    alert("Gra o podanym numerze nie istnieje.");
+                    return;
+                }
+                const gameDoc = gameSnapshot.docs[0];
+                if (!gameDoc.data().dostepnosc) {
+                    alert("Ta gra jest aktualnie wypożyczona.");
+                    return;
+                }
+                
+                await db.collection('wypozyczenia').add({
+                    uzytkownik_id: user.id,
+                    imie_nazwisko: `${user.imie} ${user.nazwisko}`,
+                    gra_id: gameDoc.id,
+                    numer_gry: numerGry,
+                    nazwa_gry: gameDoc.data().nazwa_gry,
+                    data_wypozyczenia: new Date(),
+                    status: 'aktywne'
+                });
+                
+                await gamesRef.doc(gameDoc.id).update({ dostepnosc: false });
+                alert("Gra została pomyślnie wypożyczona!");
+                renderApp(); // Refresh view
+            } catch(error) {
+                console.error("Błąd przy wypożyczaniu gry:", error);
+                alert("Wystąpił błąd.");
+            }
+        }
+        
+        async function zwrocGre(wypozyczenieId, graId) {
+             if (!confirm("Czy na pewno chcesz zwrócić tę grę?")) return;
+            try {
+                await db.collection('wypozyczenia').doc(wypozyczenieId).update({
+                    status: 'zakończone',
+                    data_zwrotu: new Date()
+                });
+                await db.collection('gry').doc(graId).update({ dostepnosc: true });
+                alert("Gra została zwrócona.");
+                renderApp();
+            } catch (error) {
+                console.error("Błąd przy zwrocie gry:", error);
+                alert("Wystąpił błąd.");
+            }
+        }
+
+        // --- Funkcje pobierające dane ---
+        async function getMyRentalsTable(userId) {
+            const snapshot = await db.collection('wypozyczenia')
+                .where('uzytkownik_id', '==', userId)
+                .where('status', '==', 'aktywne')
+                .get();
+
+            if (snapshot.empty) return "<p>Nie masz aktualnie wypożyczonych gier.</p>";
+            
+            let table = `<table><thead><tr><th>Nr Gry</th><th>Nazwa</th><th>Data Wypożyczenia</th><th>Akcje</th></tr></thead><tbody>`;
+            snapshot.forEach(doc => {
+                const rental = doc.data();
+                table += `
+                    <tr>
+                        <td>${rental.numer_gry}</td>
+                        <td>${rental.nazwa_gry}</td>
+                        <td>${rental.data_wypozyczenia.toDate().toLocaleDateString()}</td>
+                        <td><button onclick="zwrocGre('${doc.id}', '${rental.gra_id}')">Zwróć</button></td>
+                    </tr>
+                `;
+            });
+            table += '</tbody></table>';
+            return table;
+        }
+
+        async function getMeetingsList() {
+            const snapshot = await db.collection('spotkania').orderBy('data_spotkania', 'desc').get();
+            if (snapshot.empty) return "<p>Brak zaplanowanych spotkań.</p>";
+
+            let list = '<ul>';
+            const now = new Date();
+            snapshot.forEach(doc => {
+                const spotkanie = doc.data();
+                const dataSpotkania = spotkanie.data_spotkania.toDate();
+                const isPast = dataSpotkania < now;
+                list += `
+                    <li style="${isPast ? 'text-decoration: line-through; opacity: 0.6;' : ''}">
+                        ${dataSpotkania.toLocaleString('pl-PL')}
+                    </li>
+                `;
+            });
+            list += '</ul>';
+            return list;
+        }
+        
+        async function getLinksList() {
+             const snapshot = await db.collection('pliki').get();
+             if (snapshot.empty) return "<p>Brak linków.</p>";
+             return snapshot.docs.map(doc => {
+                 const plik = doc.data();
+                 return `<a href="${plik.link}" target="_blank" style="display:block; margin-bottom: 8px; padding: 10px; text-decoration: none; border-radius: 5px;">${plik.nazwa}</a>`;
+             }).join('');
+        }
+        
+        // --- Funkcje i odświeżanie dla panelu ADMINA ---
+        
+        function getActiveAdminTab() {
+            const activeLink = document.querySelector('.admin-nav-link.active');
+            return activeLink ? activeLink.dataset.tab : 'admin-borrow';
+        }
+
+        async function refreshUsersTable() {
+            const container = document.getElementById('usersTableContainer');
+            if (!container) return;
+            let content = `
+                <form id="admin-add-user-form">
+                    <input type="text" id="admin-new-user-imie" placeholder="Imię" required>
+                    <input type="text" id="admin-new-user-nazwisko" placeholder="Nazwisko" required>
+                    <input type="tel" id="admin-new-user-telefon" placeholder="Numer Telefonu" required>
+                    <button type="submit">Dodaj Użytkownika</button>
+                </form>
+            `;
+            const snapshot = await db.collection('uzytkownicy').get();
+            content += '<table><thead><tr><th>Imię</th><th>Nazwisko</th><th>Telefon</th><th>Poziom</th><th>Akcje</th></tr></thead><tbody>';
+            snapshot.forEach(doc => {
+                const user = doc.data();
+                content += `
+                    <tr>
+                        <td>${user.imie}</td>
+                        <td>${user.nazwisko}</td>
+                        <td>${user.numer_telefonu || '-'}</td>
+                        <td>${user.poziom_uprawnien}</td>
+                        <td>
+                            <button class="edit-btn" onclick="openEditModal('user', '${doc.id}')">Edytuj</button>
+                            <button class="delete-btn" onclick="usunUzytkownika('${doc.id}')">Usuń</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            content += '</tbody></table>';
+            container.innerHTML = content;
+            document.getElementById('admin-add-user-form').addEventListener('submit', dodajUzytkownika);
+        }
+        
+        async function dodajUzytkownika(e) {
+            e.preventDefault();
+            const imie = document.getElementById('admin-new-user-imie').value;
+            const nazwisko = document.getElementById('admin-new-user-nazwisko').value;
+            const numer_telefonu = document.getElementById('admin-new-user-telefon').value;
+            if (!imie || !nazwisko || !numer_telefonu) { alert("Wypełnij wszystkie pola"); return; }
+            try {
+                await db.collection('uzytkownicy').add({ imie, nazwisko, numer_telefonu, poziom_uprawnien: 'podstawowy', data_rejestracji: new Date() });
+                await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+            } catch(err) { console.error(err); alert("Błąd"); }
+        }
+        
+        async function usunUzytkownika(id) {
+            if (confirm("Na pewno usunąć użytkownika?")) {
+                try {
+                    await db.collection('uzytkownicy').doc(id).delete();
+                    await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+                } catch(err) { console.error(err); alert("Błąd"); }
+            }
+        }
+        
+        async function refreshGamesTable() {
+            const container = document.getElementById('gamesTableContainer');
+            if (!container) return;
+            let content = `
+                 <form id="admin-add-game-form">
+                    <input type="text" id="admin-new-game-name" placeholder="Nazwa gry" required>
+                    <button type="submit">Dodaj Grę</button>
+                </form>
+            `;
+            const snapshot = await db.collection('gry').orderBy('numer_gry').get();
+            content += '<table><thead><tr><th>Nr</th><th>Nazwa</th><th>Dostępność</th><th>Akcje</th></tr></thead><tbody>';
+            snapshot.forEach(doc => {
+                const game = doc.data();
+                content += `
+                    <tr>
+                        <td>${game.numer_gry}</td>
+                        <td>${game.nazwa_gry}</td>
+                        <td>${game.dostepnosc ? 'Tak' : 'Nie'}</td>
+                        <td>
+                            <button class="edit-btn" onclick="openEditModal('game', '${doc.id}')">Edytuj</button>
+                            <button class="delete-btn" onclick="usunGre('${doc.id}')">Usuń</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            content += '</tbody></table>';
+            container.innerHTML = content;
+            document.getElementById('admin-add-game-form').addEventListener('submit', dodajGre);
+        }
+
+        async function dodajGre(e) {
+            e.preventDefault();
+            const nazwa_gry = document.getElementById('admin-new-game-name').value;
+            if (!nazwa_gry) { alert("Podaj nazwę gry"); return; }
+            try {
+                const lastGameSnapshot = await db.collection('gry').orderBy('numer_gry', 'desc').limit(1).get();
+                const nextNumber = lastGameSnapshot.empty ? 1 : lastGameSnapshot.docs[0].data().numer_gry + 1;
+                await db.collection('gry').add({ nazwa_gry, numer_gry: nextNumber, dostepnosc: true });
+                await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+            } catch(err) { console.error(err); alert("Błąd"); }
+        }
+
+        async function usunGre(id) {
+             if (confirm("Na pewno usunąć grę?")) {
+                try {
+                    await db.collection('gry').doc(id).delete();
+                    await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+                } catch(err) { console.error(err); alert("Błąd"); }
+            }
+        }
+        
+        async function refreshRentalsTable() {
+             const container = document.getElementById('rentalsTableContainer');
+            if (!container) return;
+            const snapshot = await db.collection('wypozyczenia').orderBy('data_wypozyczenia', 'desc').get();
+            let content = '<table><thead><tr><th>Nr Gry</th><th>Nazwa Gry</th><th>Wypożyczający</th><th>Data Wypożyczenia</th><th>Data Zwrotu</th><th>Akcje</th></tr></thead><tbody>';
+            snapshot.forEach(doc => {
+                const rental = doc.data();
+                content += `
+                    <tr style="${rental.status === 'zakończone' ? 'opacity: 0.5' : ''}">
+                        <td>${rental.numer_gry}</td>
+                        <td>${rental.nazwa_gry}</td>
+                        <td>${rental.imie_nazwisko}</td>
+                        <td>${rental.data_wypozyczenia.toDate().toLocaleDateString()}</td>
+                        <td>${rental.data_zwrotu ? rental.data_zwrotu.toDate().toLocaleDateString() : '-'}</td>
+                        <td>${rental.status === 'aktywne' ? `<button onclick="zwrocGre('${doc.id}', '${rental.gra_id}')">Oznacz jako zwrócone</button>` : 'Zwrócono'}</td>
+                    </tr>
+                `;
+            });
+            content += '</tbody></table>';
+            container.innerHTML = content;
+        }
+
+        async function refreshLinksTable() {
+            const container = document.getElementById('linksTableContainer');
+            if (!container) return;
+            let content = `
+                <form id="admin-add-link-form">
+                    <input type="text" id="admin-new-link-name" placeholder="Nazwa wyświetlana" required>
+                    <input type="url" id="admin-new-link-url" placeholder="Pełny URL" required>
+                    <button type="submit">Dodaj Link</button>
+                </form>
+            `;
+            const snapshot = await db.collection('pliki').get();
+            content += '<table><thead><tr><th>Nazwa</th><th>Link</th><th>Akcje</th></tr></thead><tbody>';
+            snapshot.forEach(doc => {
+                const plik = doc.data();
+                content += `
+                    <tr>
+                        <td>${plik.nazwa}</td>
+                        <td><a href="${plik.link}" target="_blank">${plik.link}</a></td>
+                        <td>
+                            <button class="edit-btn" onclick="openEditModal('link', '${doc.id}')">Edytuj</button>
+                            <button class="delete-btn" onclick="usunLink('${doc.id}')">Usuń</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            content += '</tbody></table>';
+            container.innerHTML = content;
+            document.getElementById('admin-add-link-form').addEventListener('submit', dodajLink);
+        }
+
+        async function dodajLink(e) {
+            e.preventDefault();
+            const nazwa = document.getElementById('admin-new-link-name').value;
+            const link = document.getElementById('admin-new-link-url').value;
+            if (!nazwa || !link) { alert("Wypełnij oba pola"); return; }
+            try {
+                await db.collection('pliki').add({ nazwa, link });
+                await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+            } catch(err) { console.error(err); alert("Błąd"); }
+        }
+
+        async function usunLink(id) {
+            if (confirm("Na pewno usunąć link?")) {
+                try {
+                    await db.collection('pliki').doc(id).delete();
+                   await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+                } catch(err) { console.error(err); alert("Błąd"); }
+            }
+        }
+        
+        async function refreshMeetingsTable() {
+            const container = document.getElementById('meetingsTableContainer');
+            if (!container) return;
+            let content = `
+                <form id="admin-add-meeting-form">
+                    <input type="datetime-local" id="admin-new-meeting-date" required>
+                    <button type="submit">Dodaj Spotkanie</button>
+                </form>
+            `;
+            const snapshot = await db.collection('spotkania').orderBy('data_spotkania', 'desc').get();
+            content += '<table><thead><tr><th>Data Spotkania</th><th>Akcje</th></tr></thead><tbody>';
+            snapshot.forEach(doc => {
+                const spotkanie = doc.data();
+                content += `
+                    <tr>
+                        <td>${spotkanie.data_spotkania.toDate().toLocaleString('pl-PL')}</td>
+                        <td>
+                            <button class="edit-btn" onclick="openEditModal('meeting', '${doc.id}')">Edytuj</button>
+                            <button class="delete-btn" onclick="usunSpotkanie('${doc.id}')">Usuń</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            content += '</tbody></table>';
+            container.innerHTML = content;
+            document.getElementById('admin-add-meeting-form').addEventListener('submit', dodajSpotkanie);
+        }
+        
+        async function dodajSpotkanie(e) {
+            e.preventDefault();
+            const data_spotkania_str = document.getElementById('admin-new-meeting-date').value;
+            if (!data_spotkania_str) { alert("Wybierz datę i godzinę"); return; }
+            try {
+                await db.collection('spotkania').add({ data_spotkania: new Date(data_spotkania_str) });
+                await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+            } catch(err) { console.error(err); alert("Błąd"); }
+        }
+        
+        async function usunSpotkanie(id) {
+             if (confirm("Na pewno usunąć spotkanie?")) {
+                try {
+                    await db.collection('spotkania').doc(id).delete();
+                    await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+                } catch(err) { console.error(err); alert("Błąd"); }
+            }
+        }
+        
+        async function refreshSettingsForm() {
+            const container = document.getElementById('settingsContainer');
+            if (!container) return;
+            container.innerHTML = `
+                <form id="settings-form">
+                    <h3>Ustawienia Globalne</h3>
+                    <label for="kodDoKlodki">Kod do kłódki</label>
+                    <input type="text" id="kodDoKlodki" value="${appSettings.kod_do_klodki || ''}">
+                    <label for="linkRegulaminu">Link do regulaminu</label>
+                    <input type="url" id="linkRegulaminu" value="${appSettings.link_regulaminu || ''}">
+
+                    <h3>Panel Podstawowy</h3>
+                    <label for="podstawowyKolor">Kolor główny</label>
+                    <input type="color" id="podstawowyKolor" value="${appSettings.podstawowy_kolor_glowny}">
+                    <label for="podstawowyMotyw">Motyw</label>
+                    <select id="podstawowyMotyw">
+                        <option value="jasny" ${appSettings.podstawowy_motyw === 'jasny' ? 'selected' : ''}>Jasny</option>
+                        <option value="ciemny" ${appSettings.podstawowy_motyw === 'ciemny' ? 'selected' : ''}>Ciemny</option>
+                    </select>
+
+                    <h3>Panel Członka Klubu</h3>
+                     <label for="czlonekKolor">Kolor główny</label>
+                    <input type="color" id="czlonekKolor" value="${appSettings.czlonek_kolor_glowny}">
+                    <label for="czlonekMotyw">Motyw</label>
+                    <select id="czlonekMotyw">
+                        <option value="jasny" ${appSettings.czlonek_motyw === 'jasny' ? 'selected' : ''}>Jasny</option>
+                        <option value="ciemny" ${appSettings.czlonek_motyw === 'ciemny' ? 'selected' : ''}>Ciemny</option>
+                    </select>
+
+                    <h3>Panel Administratora</h3>
+                     <label for="adminKolor">Kolor główny</label>
+                    <input type="color" id="adminKolor" value="${appSettings.admin_kolor_glowny}">
+                     <label for="adminAkcent">Kolor akcentu</label>
+                    <input type="color" id="adminAkcent" value="${appSettings.admin_kolor_akcentu}">
+                    <label for="adminMotyw">Motyw</label>
+                    <select id="adminMotyw">
+                        <option value="jasny" ${appSettings.admin_motyw === 'jasny' ? 'selected' : ''}>Jasny</option>
+                        <option value="ciemny" ${appSettings.admin_motyw === 'ciemny' ? 'selected' : ''}>Ciemny</option>
+                    </select>
+                    
+                    <button type="submit">Zapisz Ustawienia</button>
+                </form>
+            `;
+            
+            document.getElementById('settings-form').addEventListener('submit', zapiszUstawienia);
+        }
+
+        async function zapiszUstawienia(e) {
+            e.preventDefault();
+            const newSettings = {
+                kod_do_klodki: document.getElementById('kodDoKlodki').value,
+                link_regulaminu: document.getElementById('linkRegulaminu').value,
+                podstawowy_motyw: document.getElementById('podstawowyMotyw').value,
+                podstawowy_kolor_glowny: document.getElementById('podstawowyKolor').value,
+                czlonek_motyw: document.getElementById('czlonekMotyw').value,
+                czlonek_kolor_glowny: document.getElementById('czlonekKolor').value,
+                admin_motyw: document.getElementById('adminMotyw').value,
+                admin_kolor_glowny: document.getElementById('adminKolor').value,
+                admin_kolor_akcentu: document.getElementById('adminAkcent').value
+            };
+
+            try {
+                await db.collection('ustawienia').doc('global').set(newSettings);
+                appSettings = newSettings; // Update local copy
+                applyTheme(); // Re-apply theme immediately
+                alert("Ustawienia zapisane!");
+                await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+            } catch(err) {
+                console.error("Błąd zapisu ustawień:", err);
+                alert("Błąd podczas zapisywania.");
+            }
+        }
+        
+        // --- Logika Modala Edycji ---
+        const modal = document.getElementById('editModal');
+        const modalContent = document.getElementById('editModalContent');
+        document.getElementById('closeModal').onclick = () => { modal.style.display = 'none'; };
+        window.onclick = (event) => { if (event.target == modal) { modal.style.display = 'none'; } };
+
+        async function openEditModal(type, id) {
+            const doc = await db.collection(getCollectionName(type)).doc(id).get();
+            const data = doc.data();
+            let content = '';
+
+            switch(type) {
+                case 'user':
+                    content = `
+                        <form id="edit-form">
+                            <label>Imię</label><input id="edit-imie" value="${data.imie}">
+                            <label>Nazwisko</label><input id="edit-nazwisko" value="${data.nazwisko}">
+                            <label>Telefon</label><input id="edit-telefon" value="${data.numer_telefonu}">
+                            <label>Poziom</label>
+                            <select id="edit-poziom">
+                                <option ${data.poziom_uprawnien === 'podstawowy' ? 'selected' : ''}>podstawowy</option>
+                                <option ${data.poziom_uprawnien === 'członek klubu' ? 'selected' : ''}>członek klubu</option>
+                                <option ${data.poziom_uprawnien === 'administrator' ? 'selected' : ''}>administrator</option>
+                            </select>
+                            <button type="submit">Zapisz</button>
+                        </form>
+                    `;
+                    break;
+                case 'game':
+                     content = `<form id="edit-form"><label>Nazwa gry</label><input id="edit-nazwa" value="${data.nazwa_gry}"><button type="submit">Zapisz</button></form>`;
+                    break;
+                case 'link':
+                     content = `<form id="edit-form"><label>Nazwa</label><input id="edit-nazwa" value="${data.nazwa}"><label>Link</label><input id="edit-link" value="${data.link}"><button type="submit">Zapisz</button></form>`;
+                    break;
+                case 'meeting':
+                    const dateString = data.data_spotkania.toDate().toISOString().slice(0, 16);
+                    content = `<form id="edit-form"><label>Data</label><input type="datetime-local" id="edit-data" value="${dateString}"><button type="submit">Zapisz</button></form>`;
+                    break;
+            }
+            modalContent.innerHTML = content;
+            modal.style.display = 'flex';
+            
+            document.getElementById('edit-form').addEventListener('submit', (e) => saveEdit(e, type, id));
+        }
+        
+        function getCollectionName(type) {
+            const map = { user: 'uzytkownicy', game: 'gry', link: 'pliki', meeting: 'spotkania' };
+            return map[type];
+        }
+
+        async function saveEdit(e, type, id) {
+            e.preventDefault();
+            let dataToUpdate = {};
+            switch(type) {
+                case 'user':
+                    dataToUpdate = {
+                        imie: document.getElementById('edit-imie').value,
+                        nazwisko: document.getElementById('edit-nazwisko').value,
+                        numer_telefonu: document.getElementById('edit-telefon').value,
+                        poziom_uprawnien: document.getElementById('edit-poziom').value
+                    };
+                    break;
+                case 'game':
+                     dataToUpdate = { nazwa_gry: document.getElementById('edit-nazwa').value };
+                    break;
+                case 'link':
+                     dataToUpdate = { nazwa: document.getElementById('edit-nazwa').value, link: document.getElementById('edit-link').value };
+                    break;
+                case 'meeting':
+                     dataToUpdate = { data_spotkania: new Date(document.getElementById('edit-data').value) };
+                    break;
+            }
+            try {
+                await db.collection(getCollectionName(type)).doc(id).update(dataToUpdate);
+                modal.style.display = 'none';
+                await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+            } catch(err) {
+                console.error("Błąd zapisu:", err);
+                alert("Błąd");
+            }
+        }
+        
+        // --- Inicjalizacja Aplikacji ---
+        async function initApp() {
+            const storedUser = sessionStorage.getItem('currentUser');
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+                await fetchAppSettings();
+                renderApp();
+            }
+        }
+        initApp();
+
+    </script>
+</body>
+</html>
