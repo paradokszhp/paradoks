@@ -277,6 +277,30 @@
             padding-bottom: 10px;
             margin-bottom: 15px;
         }
+        
+        .proposal-item, .meeting-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .proposal-item .vote-count {
+            font-weight: bold;
+            min-width: 20px;
+            text-align: right;
+        }
+
+        .proposal-item:last-child, .meeting-item:last-child {
+            border-bottom: none;
+        }
+         .meeting-item.past {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
 
         table {
             width: 100%;
@@ -333,22 +357,6 @@
             gap: 10px;
         }
 
-        .meeting-item {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .meeting-item:last-child {
-            border-bottom: none;
-        }
-         .meeting-item.past {
-            text-decoration: line-through;
-            opacity: 0.6;
-        }
-
-
         /* Styl dla input[type=color] */
         input[type="color"] {
             -webkit-appearance: none;
@@ -380,6 +388,8 @@
         body.podstawowy-jasny th, body.podstawowy-jasny td { border-color: #ddd; }
         body.podstawowy-jasny button { background-color: var(--kolor-glowny-podstawowy); color: white; border-color: var(--kolor-glowny-podstawowy); }
         body.podstawowy-jasny .modal-content { background-color: #fefefe; color: #333; }
+        body.podstawowy-jasny .proposal-item, body.podstawowy-jasny .meeting-item { border-color: #e0e0e0; }
+
 
 
         body.podstawowy-ciemny { background-color: #121212; color: #e0e0e0; }
@@ -389,6 +399,7 @@
         body.podstawowy-ciemny button { background-color: var(--kolor-glowny-podstawowy); color: white; border-color: var(--kolor-glowny-podstawowy); }
         body.podstawowy-ciemny input, body.podstawowy-ciemny select { background-color: #333; color: #e0e0e0; border-color: #555; }
         body.podstawowy-ciemny .modal-content { background-color: #1e1e1e; color: #e0e0e0; border: 1px solid #333;}
+        body.podstawowy-ciemny .proposal-item, body.podstawowy-ciemny .meeting-item { border-color: #333; }
 
 
         /* Panel Członka Klubu */
@@ -399,6 +410,7 @@
         body.czlonek-jasny button { background-color: var(--kolor-glowny-czlonek); color: white; border-color: var(--kolor-glowny-czlonek); }
         body.czlonek-jasny .file-list a { background-color: #eee; color: #333; }
         body.czlonek-jasny .modal-content { background-color: #fefefe; color: #333; }
+        body.czlonek-jasny .proposal-item, body.czlonek-jasny .meeting-item { border-color: #e0e0e0; }
 
 
         body.czlonek-ciemny { background-color: #1e1e2f; color: #f0f0f0; }
@@ -409,6 +421,7 @@
         body.czlonek-ciemny input, body.czlonek-ciemny select { background-color: #3a3a50; color: #f0f0f0; border-color: var(--kolor-glowny-czlonek); }
         body.czlonek-ciemny .file-list a { background-color: #3a3a50; color: #f0f0f0; }
         body.czlonek-ciemny .modal-content { background-color: #2c2c3e; color: #f0f0f0; border: 1px solid var(--kolor-glowny-czlonek);}
+        body.czlonek-ciemny .proposal-item, body.czlonek-ciemny .meeting-item { border-color: #444; }
 
 
         /* Panel Administratora */
@@ -419,6 +432,9 @@
         .admin-content { flex-grow: 1; padding: 25px; overflow-y: auto; }
         .admin-tab-pane { display: none; }
         .admin-tab-pane.active { display: block; }
+        
+        .menu-toggle { display: none; }
+        .desktop-logout { display: inline-block; }
         
         body.admin-jasny { background-color: #f4f7fc; color: #333; }
         body.admin-jasny .admin-nav { background-color: #ffffff; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
@@ -449,8 +465,142 @@
 
 
         @media (max-width: 768px) {
-            .admin-panel-layout { flex-direction: column; }
-            .admin-nav { flex-direction: row; overflow-x: auto; min-width: auto; }
+            .app-header {
+                flex-direction: row; /* Revert to row for mobile header */
+                justify-content: space-between;
+                gap: 10px;
+                padding: 15px;
+            }
+            .app-header .user-info {
+                text-align: left; /* Adjust alignment */
+                display: none; /* Hide user info for more space */
+            }
+             .app-header .user-info:first-of-type {
+                display: block; /* Show only name */
+            }
+
+
+            .auth-form-container {
+                padding: 20px;
+            }
+            .auth-form h1 {
+                font-size: 1.8rem;
+            }
+
+            .app-content {
+                padding: 15px;
+            }
+            .grid-container {
+                gap: 15px;
+            }
+
+            .modal-content {
+                width: 90%;
+            }
+
+            .desktop-logout {
+                display: none; /* Hide on mobile */
+            }
+            .menu-toggle {
+                display: block; /* Show on mobile */
+                background: none;
+                border: none;
+                padding: 0;
+                cursor: pointer;
+            }
+            
+            .admin-panel-layout { flex-direction: column; position: relative; } /* Add relative for positioning context */
+            
+            .admin-nav {
+                display: none;
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                overflow-y: auto;
+                z-index: 1000;
+                border-radius: 0;
+                box-shadow: var(--cień-karty);
+            }
+            .admin-nav.nav-open {
+                display: flex;
+            }
+            .admin-nav .admin-nav-link {
+                margin: 0;
+                border-radius: 0;
+                border-bottom: 1px solid rgba(0,0,0,0.1);
+            }
+             .admin-nav .admin-nav-link:last-child {
+                border-bottom: none;
+                margin-top: 10px;
+                background-color: #dc3545; /* Red logout button */
+            }
+
+            body.admin-jasny .admin-nav.nav-open {
+                 background-color: var(--kolor-karty);
+            }
+             body.admin-jasny .admin-nav .admin-nav-link:last-child {
+                color: white;
+            }
+            
+            body.admin-ciemny .admin-nav.nav-open {
+                background-color: #252535;
+            }
+            body.admin-ciemny .admin-nav .admin-nav-link {
+                border-bottom-color: #444;
+            }
+
+
+            table {
+                border: 0;
+            }
+            table thead {
+                border: none;
+                clip: rect(0 0 0 0);
+                height: 1px;
+                margin: -1px;
+                overflow: hidden;
+                padding: 0;
+                position: absolute;
+                width: 1px;
+            }
+            table tr {
+                display: block;
+                margin-bottom: 15px;
+                border-bottom: 3px solid var(--kolor-przycisku-glownego);
+                border-radius: 8px;
+                box-shadow: var(--cień-karty);
+                padding: 10px;
+            }
+            table td {
+                display: block;
+                text-align: right;
+                border-bottom: 1px dotted;
+            }
+            table td::before {
+                content: attr(data-label);
+                float: left;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+            table td:last-child {
+                border-bottom: 0;
+            }
+            
+            body.podstawowy-jasny table tr, body.czlonek-jasny table tr, body.admin-jasny table tr {
+                background-color: #f9f9f9;
+            }
+            body.podstawowy-jasny table td, body.czlonek-jasny table td, body.admin-jasny table td {
+                 border-bottom-color: #ddd;
+            }
+            
+            body.podstawowy-ciemny table tr, body.czlonek-ciemny table tr, body.admin-ciemny table tr {
+                 background-color: #1e1e1e;
+            }
+            body.podstawowy-ciemny table td, body.czlonek-ciemny table td, body.admin-ciemny table td {
+                border-bottom-color: #444;
+            }
         }
     </style>
 </head>
@@ -854,6 +1004,7 @@
             const linksList = await getLinksList(false);
             const documentsHtml = getDocumentsHtml();
             const borrowGameHtml = getBorrowGameHtml(user);
+            const proposalsHtml = await getProposalsList(user);
 
             appPanel.innerHTML = `
                 ${header}
@@ -872,6 +1023,10 @@
                             <h3>Moje Wypożyczone Gry</h3>
                             ${myRentalsTable}
                         </div>
+                         <div class="grid-item">
+                            <h3>Głosowanie</h3>
+                            ${proposalsHtml}
+                        </div>
                         ${documentsHtml}
                     </div>
                 </div>
@@ -883,10 +1038,36 @@
                     wypozyczGre(user);
                 });
             }
+             const proposalForm = document.getElementById('proposalForm');
+            if(proposalForm) {
+                proposalForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    addProposal(user);
+                });
+            }
         }
 
         async function renderAdminPanel(user, activeTab = 'admin-borrow') {
-            const header = await renderHeader(user);
+            const adminHeaderHtml = `
+                <div class="app-header" style="background-color: ${getPrimaryColor(user.poziom_uprawnien)};">
+                    <div class="user-info">
+                        <span>${user.imie} ${user.nazwisko}</span>
+                        <small>${user.poziom_uprawnien}</small>
+                    </div>
+                    <div class="user-info">
+                        <span>Kod do kłódki: ${appSettings.kod_do_klodki}</span>
+                    </div>
+                    <button class="desktop-logout" onclick="logout()">Wyloguj</button>
+                    <button class="menu-toggle" aria-label="Otwórz menu">
+                        <svg viewBox="0 0 100 80" width="25" height="25" fill="white">
+                          <rect width="100" height="15" rx="8"></rect>
+                          <rect y="30" width="100" height="15" rx="8"></rect>
+                          <rect y="60" width="100" height="15" rx="8"></rect>
+                        </svg>
+                    </button> 
+                </div>
+            `;
+
             const tabs = [{
                 id: 'admin-borrow',
                 name: 'Wypożycz Grę'
@@ -900,6 +1081,9 @@
                 id: 'admin-rentals',
                 name: 'Wypożyczenia'
             }, {
+                id: 'admin-proposals',
+                name: 'Głosowanie'
+            }, {
                 id: 'admin-links',
                 name: 'Linki'
             }, {
@@ -909,12 +1093,16 @@
                 id: 'admin-settings',
                 name: 'Ustawienia'
             }];
+            
+            const navLinksHtml = tabs.map(tab => `<button class="admin-nav-link ${tab.id === activeTab ? 'active' : ''}" data-tab="${tab.id}">${tab.name}</button>`).join('');
+            const logoutLinkHtml = `<button class="admin-nav-link" onclick="logout()">Wyloguj</button>`;
 
             appPanel.innerHTML = `
-                ${header}
+                ${adminHeaderHtml}
                 <div class="app-content admin-panel-layout">
                     <nav class="admin-nav">
-                        ${tabs.map(tab => `<button class="admin-nav-link ${tab.id === activeTab ? 'active' : ''}" data-tab="${tab.id}">${tab.name}</button>`).join('')}
+                        ${navLinksHtml}
+                        ${logoutLinkHtml}
                     </nav>
                     <main class="admin-content">
                         ${tabs.map(tab => `<div id="${tab.id}-content" class="admin-tab-pane ${tab.id === activeTab ? 'active' : ''}"></div>`).join('')}
@@ -922,10 +1110,14 @@
                 </div>
             `;
 
-            await renderAdminTabContent(activeTab, user, true); // Force re-render
+            await renderAdminTabContent(activeTab, user, true);
+
+            appPanel.querySelector('.menu-toggle').addEventListener('click', () => {
+                appPanel.querySelector('.admin-nav').classList.toggle('nav-open');
+            });
 
             appPanel.querySelector('.admin-nav').addEventListener('click', async (e) => {
-                if (e.target.classList.contains('admin-nav-link')) {
+                if (e.target.classList.contains('admin-nav-link') && e.target.dataset.tab) {
                     const tabId = e.target.dataset.tab;
                     if (document.querySelector('.admin-nav-link.active')) {
                         document.querySelector('.admin-nav-link.active').classList.remove('active');
@@ -935,6 +1127,7 @@
                     }
                     e.target.classList.add('active');
                     document.querySelector(`#${tabId}-content`).classList.add('active');
+                    appPanel.querySelector('.admin-nav').classList.remove('nav-open');
                     await renderAdminTabContent(tabId, user);
                 }
             });
@@ -951,7 +1144,7 @@
                     contentEl.innerHTML = `
                         <h3>Wypożycz Grę</h3>
                         <form id="wypozyczForm">
-                            <input type="number" id="numerGry" placeholder="Wpisz 4-cyfrowy numer gry" required>
+                            <input type="text" id="numerGry" placeholder="Wpisz 4-cyfrowy numer gry" required maxlength="4">
                             <label for="dataZwrotu" style="margin-top: 10px; display: block;">Przewidywana data zwrotu:</label>
                             <input type="date" id="dataZwrotu" required min="${today}">
                             <button type="submit">Wypożycz</button>
@@ -973,6 +1166,10 @@
                 case 'admin-rentals':
                     contentEl.innerHTML = `<h3>Historia Wypożyczeń</h3><div id="rentalsTableContainer"></div>`;
                     await refreshRentalsTable(true);
+                    break;
+                 case 'admin-proposals':
+                    contentEl.innerHTML = `<h3>Głosowanie na Nowe Gry</h3><div id="proposalsTableContainer"></div>`;
+                    await refreshProposalsTable(user);
                     break;
                 case 'admin-links':
                     contentEl.innerHTML = `<h3>Linki</h3><div id="linksTableContainer"></div>`;
@@ -1013,11 +1210,11 @@
                 }
             }
 
-            const numerGry = parseInt(document.getElementById('numerGry').value, 10);
+            const numerGry = document.getElementById('numerGry').value.trim().padStart(4, '0');
             const dataZwrotuValue = document.getElementById('dataZwrotu').value;
 
-            if (!numerGry) {
-                showCustomAlert("Brak danych", "Podaj numer gry.", true);
+            if (!numerGry || numerGry.length !== 4) {
+                showCustomAlert("Brak danych", "Podaj prawidłowy, 4-cyfrowy numer gry.", true);
                 return;
             }
             if (!dataZwrotuValue) {
@@ -1129,11 +1326,11 @@
 
                 table += `
                     <tr style="${isOverdue ? 'background-color: #ffdddd;' : ''}">
-                        <td>${rental.numer_gry}</td>
-                        <td>${rental.nazwa_gry}</td>
-                        <td>${rentalDate.toLocaleDateString()}</td>
-                        <td>${przewidywanyZwrot}</td>
-                        <td><button onclick="zwrocGre('${doc.id}', '${rental.gra_id}')">Zwróć</button></td>
+                        <td data-label="Nr Gry">${rental.numer_gry}</td>
+                        <td data-label="Nazwa">${rental.nazwa_gry}</td>
+                        <td data-label="Data Wypożyczenia">${rentalDate.toLocaleDateString()}</td>
+                        <td data-label="Przewidywany Zwrot">${przewidywanyZwrot}</td>
+                        <td data-label="Akcje"><button onclick="zwrocGre('${doc.id}', '${rental.gra_id}')">Zwróć</button></td>
                     </tr>
                 `;
             });
@@ -1221,7 +1418,7 @@
                 <div class="grid-item" id="borrow-game-section">
                     <h3>Wypożycz Grę</h3>
                     <form id="wypozyczForm">
-                        <input type="number" id="numerGry" placeholder="Wpisz 4-cyfrowy numer gry" required>
+                        <input type="text" id="numerGry" placeholder="Wpisz 4-cyfrowy numer gry" required maxlength="4">
                         <label for="dataZwrotu" style="margin-top: 10px; display: block;">Przewidywana data zwrotu:</label>
                         <input type="date" id="dataZwrotu" required min="${today}">
                         <button type="submit">Wypożycz</button>
@@ -1269,12 +1466,12 @@
 
                 content += `
                     <tr>
-                        <td>${user.imie}</td>
-                        <td>${user.nazwisko}</td>
-                        <td>${user.numer_telefonu || '-'}</td>
-                        <td>${user.poziom_uprawnien}</td>
-                        <td>${status}</td>
-                        <td>
+                        <td data-label="Imię">${user.imie}</td>
+                        <td data-label="Nazwisko">${user.nazwisko}</td>
+                        <td data-label="Telefon">${user.numer_telefonu || '-'}</td>
+                        <td data-label="Poziom">${user.poziom_uprawnien}</td>
+                        <td data-label="Status">${status}</td>
+                        <td data-label="Akcje">
                             <button class="edit-btn" onclick="openEditModal('user', '${doc.id}')">Edytuj</button>
                             <button class="delete-btn" onclick="usunUzytkownika('${doc.id}')">Usuń</button>
                             ${banActions}
@@ -1371,10 +1568,10 @@
                 const game = doc.data();
                 content += `
                     <tr>
-                        <td>${game.numer_gry}</td>
-                        <td>${game.nazwa_gry}</td>
-                        <td>${game.dostepnosc ? 'Tak' : 'Nie'}</td>
-                        <td>
+                        <td data-label="Nr">${game.numer_gry}</td>
+                        <td data-label="Nazwa">${game.nazwa_gry}</td>
+                        <td data-label="Dostępność">${game.dostepnosc ? 'Tak' : 'Nie'}</td>
+                        <td data-label="Akcje">
                             <button class="edit-btn" onclick="openEditModal('game', '${doc.id}')">Edytuj</button>
                             <button class="delete-btn" onclick="usunGre('${doc.id}')">Usuń</button>
                         </td>
@@ -1395,10 +1592,12 @@
             }
             try {
                 const lastGameSnapshot = await db.collection('gry').orderBy('numer_gry', 'desc').limit(1).get();
-                const nextNumber = lastGameSnapshot.empty ? 1 : lastGameSnapshot.docs[0].data().numer_gry + 1;
+                const lastGameNumber = lastGameSnapshot.empty ? 0 : parseInt(lastGameSnapshot.docs[0].data().numer_gry, 10);
+                const nextNumber = lastGameNumber + 1;
+                
                 await db.collection('gry').add({
-                    nazwa_gry,
-                    numer_gry: nextNumber,
+                    nazwa_gry: nazwa_gry,
+                    numer_gry: String(nextNumber).padStart(4, '0'),
                     dostepnosc: true
                 });
                 await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
@@ -1445,13 +1644,13 @@
                 const przewidywanyZwrot = rental.przewidywana_data_zwrotu ? rental.przewidywana_data_zwrotu.toDate().toLocaleDateString() : '-';
                 content += `
                     <tr style="${rowStyle}">
-                        <td>${rental.numer_gry}</td>
-                        <td>${rental.nazwa_gry}</td>
-                        <td>${rental.imie_nazwisko}</td>
-                        <td>${rental.data_wypozyczenia.toDate().toLocaleDateString()}</td>
-                        <td>${przewidywanyZwrot}</td>
-                        <td>${rental.data_zwrotu ? rental.data_zwrotu.toDate().toLocaleDateString() : '-'}</td>
-                        <td>${rental.status === 'aktywne' ? `<button onclick="zwrocGre('${doc.id}', '${rental.gra_id}')">Oznacz jako zwrócone</button>` : 'Zwrócono'}</td>
+                        <td data-label="Nr Gry">${rental.numer_gry}</td>
+                        <td data-label="Nazwa Gry">${rental.nazwa_gry}</td>
+                        <td data-label="Wypożyczający">${rental.imie_nazwisko}</td>
+                        <td data-label="Data Wypożyczenia">${rental.data_wypozyczenia.toDate().toLocaleDateString()}</td>
+                        <td data-label="Przewidywany Zwrot">${przewidywanyZwrot}</td>
+                        <td data-label="Data Zwrotu">${rental.data_zwrotu ? rental.data_zwrotu.toDate().toLocaleDateString() : '-'}</td>
+                        <td data-label="Akcje">${rental.status === 'aktywne' ? `<button onclick="zwrocGre('${doc.id}', '${rental.gra_id}')">Oznacz jako zwrócone</button>` : 'Zwrócono'}</td>
                     </tr>
                 `;
             });
@@ -1475,9 +1674,9 @@
                 const plik = doc.data();
                 content += `
                     <tr>
-                        <td>${plik.nazwa}</td>
-                        <td><a href="${plik.link}" target="_blank">${plik.link}</a></td>
-                        <td>
+                        <td data-label="Nazwa">${plik.nazwa}</td>
+                        <td data-label="Link"><a href="${plik.link}" target="_blank">${plik.link}</a></td>
+                        <td data-label="Akcje">
                             <button class="edit-btn" onclick="openEditModal('link', '${doc.id}')">Edytuj</button>
                             <button class="delete-btn" onclick="usunLink('${doc.id}')">Usuń</button>
                         </td>
@@ -1534,9 +1733,9 @@
                 const attendeeCount = spotkanie.attendees ? spotkanie.attendees.length : 0;
                 content += `
                     <tr>
-                        <td>${spotkanie.data_spotkania.toDate().toLocaleString('pl-PL')}</td>
-                        <td>${attendeeCount}</td>
-                        <td>
+                        <td data-label="Data Spotkania">${spotkanie.data_spotkania.toDate().toLocaleString('pl-PL')}</td>
+                        <td data-label="Obecni">${attendeeCount}</td>
+                        <td data-label="Akcje">
                              <button onclick="showMeetingAttendees('${doc.id}')">Pokaż obecnych</button>
                             <button class="edit-btn" onclick="openEditModal('meeting', '${doc.id}')">Edytuj</button>
                             <button class="delete-btn" onclick="usunSpotkanie('${doc.id}')">Usuń</button>
@@ -1576,6 +1775,45 @@
                 } catch(err) { console.error(err); showCustomAlert("Błąd", "Wystąpił błąd.", true); }
             });
         }
+        
+         async function refreshProposalsTable(user) {
+            const container = document.getElementById('proposalsTableContainer');
+            if (!container) return;
+
+             let content = `
+                <form id="adminProposalForm">
+                    <input type="text" id="adminNewProposalName" placeholder="Nazwa nowej gry" required>
+                    <button type="submit">Zaproponuj</button>
+                </form>
+                <br>
+            `;
+
+            const snapshot = await db.collection('propozycjeGier').orderBy('data_dodania', 'desc').get();
+            content += '<table><thead><tr><th>Nazwa Gry</th><th>Głosy</th><th>Zaproponował/a</th><th>Akcje</th></tr></thead><tbody>';
+            snapshot.forEach(doc => {
+                const proposal = doc.data();
+                const voteCount = proposal.votes ? proposal.votes.length : 0;
+                content += `
+                    <tr>
+                        <td data-label="Nazwa Gry">${proposal.nazwa_gry}</td>
+                        <td data-label="Głosy">${voteCount}</td>
+                        <td data-label="Zaproponował/a">${proposal.proposing_user_name || 'Nieznany'}</td>
+                        <td data-label="Akcje">
+                            <button onclick="showProposalVoters('${doc.id}')">Pokaż głosujących</button>
+                            <button class="delete-btn" onclick="deleteProposal('${doc.id}')">Usuń</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            content += '</tbody></table>';
+            container.innerHTML = content;
+
+            document.getElementById('adminProposalForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                addProposal(user, 'admin'); // Pass a flag to use the admin input field
+            });
+        }
+
 
         async function refreshSettingsForm() {
             const container = document.getElementById('settingsContainer');
@@ -1732,6 +1970,7 @@
                     `;
                     break;
                 case 'game':
+                case 'proposal': // Re-use same form structure
                     content = `<form id="edit-form"><label>Nazwa gry</label><input id="edit-nazwa" value="${data.nazwa_gry}"><button type="submit">Zapisz</button></form>`;
                     break;
                 case 'link':
@@ -1809,7 +2048,8 @@
                 user: 'uzytkownicy',
                 game: 'gry',
                 link: 'pliki',
-                meeting: 'spotkania'
+                meeting: 'spotkania',
+                proposal: 'propozycjeGier'
             };
             return map[type];
         }
@@ -1827,6 +2067,7 @@
                     };
                     break;
                 case 'game':
+                case 'proposal':
                     dataToUpdate = {
                         nazwa_gry: document.getElementById('edit-nazwa').value
                     };
@@ -1846,12 +2087,142 @@
             try {
                 await db.collection(getCollectionName(type)).doc(id).update(dataToUpdate);
                 formModal.style.display = 'none';
-                await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+                
+                if (currentUser.poziom_uprawnien === 'administrator') {
+                    await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+                } else {
+                    await renderApp();
+                }
+
             } catch (err) {
                 console.error("Błąd zapisu:", err);
                 showCustomAlert("Błąd", "Wystąpił błąd.", true);
             }
         }
+        
+        // --- Funkcje Propozycji Gier ---
+        async function getProposalsList(user) {
+            const snapshot = await db.collection('propozycjeGier').orderBy('data_dodania', 'desc').get();
+            let html = `
+                <form id="proposalForm">
+                    <input type="text" id="newProposalName" placeholder="Nazwa nowej gry" required>
+                    <button type="submit">Zaproponuj</button>
+                </form>
+                <div style="margin-top: 20px;">
+            `;
+            
+            if (snapshot.empty) {
+                html += '<p>Brak propozycji.</p>';
+            } else {
+                snapshot.forEach(doc => {
+                    const proposal = doc.data();
+                    const voteCount = proposal.votes ? proposal.votes.length : 0;
+                    const hasVoted = proposal.votes && proposal.votes.includes(user.id);
+                    const isCreator = proposal.proposing_user_id === user.id;
+
+                    let buttons = '';
+                    if (isCreator) {
+                         buttons = `<button class="edit-btn" onclick="openEditModal('proposal', '${doc.id}')">Edytuj</button>`;
+                    } else {
+                        buttons = `<button onclick="voteForProposal('${doc.id}', '${user.id}')" ${hasVoted ? 'disabled' : ''}>
+                                    ${hasVoted ? 'Zagłosowano' : 'Głosuj'}
+                                </button>`;
+                    }
+
+                    html += `
+                        <div class="proposal-item">
+                            <span>${proposal.nazwa_gry}</span>
+                            <div>
+                                <span class="vote-count">${voteCount}</span>
+                                ${buttons}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        async function addProposal(user, source = 'member') {
+            const inputId = source === 'admin' ? 'adminNewProposalName' : 'newProposalName';
+            const gameNameInput = document.getElementById(inputId);
+            const gameName = gameNameInput.value.trim();
+            if (!gameName) {
+                showCustomAlert("Błąd", "Nazwa gry nie może być pusta.", true);
+                return;
+            }
+
+            try {
+                await db.collection('propozycjeGier').add({
+                    nazwa_gry: gameName,
+                    proposing_user_id: user.id,
+                    proposing_user_name: `${user.imie} ${user.nazwisko}`,
+                    data_dodania: new Date(),
+                    votes: []
+                });
+                gameNameInput.value = '';
+
+                if (user.poziom_uprawnien === 'administrator') {
+                    await refreshProposalsTable(user);
+                } else {
+                    await renderApp();
+                }
+            } catch (error) {
+                console.error("Błąd dodawania propozycji: ", error);
+                showCustomAlert("Błąd", "Wystąpił błąd podczas dodawania propozycji.", true);
+            }
+        }
+        
+        async function voteForProposal(proposalId, userId) {
+            try {
+                const proposalRef = db.collection('propozycjeGier').doc(proposalId);
+                await proposalRef.update({
+                    votes: firebase.firestore.FieldValue.arrayUnion(userId)
+                });
+                await renderApp();
+            } catch (error) {
+                console.error("Błąd podczas głosowania: ", error);
+                showCustomAlert("Błąd", "Wystąpił błąd podczas głosowania.", true);
+            }
+        }
+        
+        async function showProposalVoters(proposalId) {
+            infoModalTitle.textContent = 'Głosujący';
+            infoModalButtons.innerHTML = '';
+            const proposalDoc = await db.collection('propozycjeGier').doc(proposalId).get();
+            if (!proposalDoc.exists) return;
+
+            const voterIds = proposalDoc.data().votes || [];
+            if (voterIds.length === 0) {
+                infoModalBody.innerHTML = '<p>Nikt jeszcze nie zagłosował.</p>';
+                infoModal.style.display = 'flex';
+                return;
+            }
+
+            const voterPromises = voterIds.map(id => db.collection('uzytkownicy').doc(id).get());
+            const voterDocs = await Promise.all(voterPromises);
+            const voterNames = voterDocs
+                .map(doc => doc.exists ? `<li>${doc.data().imie} ${doc.data().nazwisko}</li>` : '<li>Użytkownik usunięty</li>')
+                .join('');
+            
+            infoModalBody.innerHTML = `<ul>${voterNames}</ul>`;
+            infoModal.style.display = 'flex';
+        }
+        
+        async function deleteProposal(proposalId) {
+            showCustomConfirm('Potwierdzenie', 'Czy na pewno chcesz usunąć tę propozycję?', async () => {
+                try {
+                    await db.collection('propozycjeGier').doc(proposalId).delete();
+                    await refreshProposalsTable(currentUser);
+                } catch(err) {
+                    console.error("Błąd usuwania propozycji:", err);
+                    showCustomAlert("Błąd", "Wystąpił błąd podczas usuwania.", true);
+                }
+            });
+        }
+
 
         // --- Inicjalizacja Aplikacji ---
         function loadRememberedUser() {
@@ -1869,6 +2240,10 @@
             const storedUser = sessionStorage.getItem('currentUser');
             if (storedUser) {
                 currentUser = JSON.parse(storedUser);
+                // Konwersja pól timestamp z powrotem na obiekty Date
+                if(currentUser.ban && currentUser.ban.expires) {
+                    currentUser.ban.expires = new firebase.firestore.Timestamp(currentUser.ban.expires.seconds, currentUser.ban.expires.nanoseconds);
+                }
                 await fetchAppSettings();
                 renderApp();
             }
