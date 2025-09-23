@@ -8,87 +8,110 @@
     <link rel="icon" href="favicon.png" type="image/png">
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --kolor-glowny-podstawowy: #a6ce39;
             --kolor-glowny-czlonek: #642888;
             --kolor-glowny-admin: #642888;
             --kolor-akcentu-admin: #FFD700;
+            --kolor-tla: #f0f2f5;
+            --kolor-karty: #ffffff;
+            --kolor-tekstu: #1c1e21;
+            --kolor-tekstu-drugorzedny: #606770;
+            --kolor-przycisku-glownego: #642888;
+            --kolor-przycisku-glownego-hover: #5a247a;
+            --kolor-przycisku-drugorzednego: #6c757d;
+            --kolor-przycisku-drugorzednego-hover: #5a6268;
+            --kolor-przycisku-drugorzednego-tekst: #ffffff;
+            --kolor-bledu: #dc3545;
+            --cień-karty: 0 12px 28px 0 rgba(0, 0, 0, 0.08), 0 2px 4px 0 rgba(0, 0, 0, 0.05);
         }
 
         body {
             font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            background-color: #f0f2f5;
-            color: #333;
+            background-color: var(--kolor-tla);
+            color: var(--kolor-tekstu);
             transition: background-color 0.3s;
         }
 
-        /* --- Ekran Logowania i Rejestracji --- */
+        /* --- NOWY Ekran Logowania i Rejestracji --- */
         .auth-container {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            box-sizing: border-box;
+            background-color: var(--kolor-tla);
         }
 
-        .auth-form {
-            background-color: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        .auth-wrapper {
+            max-width: 500px;
             width: 100%;
-            max-width: 400px;
-            text-align: center;
-            /* === POPRAWKA 1 === */
-            /* Dodajemy tę właściwość, aby elementy w formularzu (nagłówek, pola, przyciski) */
-            /* układały się w kolumnie, gdy JavaScript ustawi mu 'display: flex'. */
+            background-color: var(--kolor-karty);
+            border-radius: 20px;
+            box-shadow: var(--cień-karty);
+            overflow: hidden;
+        }
+
+        .auth-form-container {
+            padding: 40px;
+            display: flex;
             flex-direction: column;
+            justify-content: center;
         }
 
         .auth-form h1 {
             margin-top: 0;
-            margin-bottom: 30px;
-            color: #333;
+            margin-bottom: 1rem;
+            color: var(--kolor-tekstu);
             font-weight: 600;
+            font-size: 2rem;
+            text-align: center;
         }
         
+        .auth-form p.subtitle {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--kolor-tekstu-drugorzedny);
+        }
+
         .input-group {
             position: relative;
-            margin-bottom: 20px;
-            /* === POPRAWKA 2 === */
-            /* Ustawiamy pełną szerokość, aby pole input wraz z ikoną */
-            /* poprawnie wypełniało kontener formularza. */
-            width: 100%;
+            margin-bottom: 1.25rem;
         }
-        
-        .input-group i {
+
+        .input-group .icon {
             position: absolute;
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
             color: #aaa;
+            width: 16px;
+            height: 16px;
         }
 
-        .auth-form input {
+        .auth-form input[type="text"],
+        .auth-form input[type="tel"] {
             width: 100%;
             padding: 14px 14px 14px 45px;
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
             border-radius: 8px;
             box-sizing: border-box;
-            font-size: 16px;
+            font-size: 1rem;
             font-family: 'Poppins', sans-serif;
-        }
-        .auth-form input:focus {
-            outline: none;
-            border-color: #007bff;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
+        .auth-form input:focus {
+            outline: none;
+            border-color: var(--kolor-przycisku-glownego);
+            box-shadow: 0 0 0 2px rgba(100, 40, 136, 0.2);
+        }
 
         .auth-form button {
             width: 100%;
@@ -96,60 +119,104 @@
             border: none;
             border-radius: 8px;
             color: white;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        #loginButton {
-            background-color: #007bff;
-        }
-        #loginButton:hover {
-            background-color: #0056b3;
-        }
-        #goToRegisterButton {
-            background-color: #6c757d;
-            margin-top: 10px;
-        }
-
-        #registerButton {
-            background-color: #28a745;
-        }
-        #backToLoginButton {
-            background-color: #6c757d;
-            margin-top: 10px;
-        }
-
-        #errorMessage, #regErrorMessage {
-            color: #dc3545;
-            margin-top: 15px;
-            font-weight: bold;
-            min-height: 20px;
+            transition: background-color 0.2s, transform 0.1s;
+            margin-bottom: 0.75rem;
         }
         
-        .terms-container {
+        .auth-form button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--kolor-przycisku-glownego);
+        }
+        .btn-primary:hover {
+            background-color: var(--kolor-przycisku-glownego-hover);
+        }
+        
+        .btn-secondary {
+            background-color: var(--kolor-przycisku-drugorzednego);
+            color: var(--kolor-przycisku-drugorzednego-tekst);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--kolor-przycisku-drugorzednego-hover);
+        }
+
+        #errorMessage,
+        #regErrorMessage {
+            color: var(--kolor-bledu);
+            margin-top: 1rem;
+            font-weight: 500;
+            min-height: 20px;
+            text-align: center;
+        }
+        
+        .remember-me-container {
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin: 15px 0;
-            font-size: 14px;
+            justify-content: flex-start;
+            margin-bottom: 1.25rem;
+            font-size: 0.9rem;
+            color: var(--kolor-tekstu-drugorzedny);
+        }
+        .remember-me-container input {
+            margin-right: 8px;
+            width: auto;
+            padding: 0;
+        }
+
+        .terms-container {
+            display: flex;
+            align-items: flex-start;
+            margin: 0.75rem 0;
+            font-size: 0.8rem;
+            text-align: left;
+        }
+
+        .terms-container:last-of-type {
+            margin-bottom: 1.5rem;
         }
         .terms-container input {
-            width: auto;
-            margin: 0 10px 0 0;
+            margin-top: 3px;
+            margin-right: 8px;
+            flex-shrink: 0;
         }
         .terms-container label {
-            color: #666;
+            color: var(--kolor-tekstu-drugorzedny);
         }
         .terms-container a {
-            color: #007bff;
+            color: var(--kolor-przycisku-glownego);
             text-decoration: none;
+            font-weight: 500;
         }
         .terms-container a:hover {
             text-decoration: underline;
         }
         
+        .doc-button {
+            display: block;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 6px;
+            background-color: var(--kolor-przycisku-drugorzednego);
+            color: var(--kolor-przycisku-drugorzednego-tekst);
+            transition: background-color 0.2s;
+            border: none;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .doc-button:hover {
+            background-color: var(--kolor-przycisku-drugorzednego-hover);
+        }
+
         /* --- Panel Aplikacji --- */
         .app-panel {
             display: none; /* Domyślnie ukryty */
@@ -163,7 +230,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .app-header .user-info {
@@ -187,7 +254,7 @@
             cursor: pointer;
             font-weight: bold;
         }
-        
+
         .app-content {
             flex-grow: 1;
             padding: 25px;
@@ -203,7 +270,7 @@
             padding: 20px;
             border-radius: 8px;
         }
-        
+
         .grid-item h3 {
             margin-top: 0;
             border-bottom: 2px solid;
@@ -216,27 +283,72 @@
             border-collapse: collapse;
             margin-top: 15px;
         }
-        th, td {
+        th,
+        td {
             padding: 12px;
             border: 1px solid;
             text-align: left;
         }
-        form { display: flex; flex-direction: column; gap: 10px; }
-        input, select, button {
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        input,
+        select,
+        button {
             padding: 10px;
             font-size: 16px;
             border-radius: 6px;
             border: 1px solid #ccc;
         }
         .modal {
-            display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
-            overflow: auto; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center;
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
         }
         .modal-content {
-            background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888;
-            width: 80%; max-width: 500px; border-radius: 10px;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: var(--cień-karty);
         }
         
+         #infoModalButtons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .meeting-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .meeting-item:last-child {
+            border-bottom: none;
+        }
+         .meeting-item.past {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+
         /* Styl dla input[type=color] */
         input[type="color"] {
             -webkit-appearance: none;
@@ -267,6 +379,8 @@
         body.podstawowy-jasny .grid-item h3 { border-color: var(--kolor-glowny-podstawowy); color: var(--kolor-glowny-podstawowy); }
         body.podstawowy-jasny th, body.podstawowy-jasny td { border-color: #ddd; }
         body.podstawowy-jasny button { background-color: var(--kolor-glowny-podstawowy); color: white; border-color: var(--kolor-glowny-podstawowy); }
+        body.podstawowy-jasny .modal-content { background-color: #fefefe; color: #333; }
+
 
         body.podstawowy-ciemny { background-color: #121212; color: #e0e0e0; }
         body.podstawowy-ciemny .grid-item { background-color: #1e1e1e; border: 1px solid #333; }
@@ -274,7 +388,9 @@
         body.podstawowy-ciemny th, body.podstawowy-ciemny td { border-color: #444; }
         body.podstawowy-ciemny button { background-color: var(--kolor-glowny-podstawowy); color: white; border-color: var(--kolor-glowny-podstawowy); }
         body.podstawowy-ciemny input, body.podstawowy-ciemny select { background-color: #333; color: #e0e0e0; border-color: #555; }
-        
+        body.podstawowy-ciemny .modal-content { background-color: #1e1e1e; color: #e0e0e0; border: 1px solid #333;}
+
+
         /* Panel Członka Klubu */
         body.czlonek-jasny { background-color: #ffffff; color: #333; }
         body.czlonek-jasny .grid-item { background-color: #f9f9f9; border: 1px solid #e0e0e0; }
@@ -282,7 +398,9 @@
         body.czlonek-jasny th, body.czlonek-jasny td { border-color: #ddd; }
         body.czlonek-jasny button { background-color: var(--kolor-glowny-czlonek); color: white; border-color: var(--kolor-glowny-czlonek); }
         body.czlonek-jasny .file-list a { background-color: #eee; color: #333; }
-        
+        body.czlonek-jasny .modal-content { background-color: #fefefe; color: #333; }
+
+
         body.czlonek-ciemny { background-color: #1e1e2f; color: #f0f0f0; }
         body.czlonek-ciemny .grid-item { background-color: #2c2c3e; border: 1px solid var(--kolor-glowny-czlonek); }
         body.czlonek-ciemny .grid-item h3 { border-color: var(--kolor-glowny-czlonek); color: #f0f0f0; }
@@ -290,7 +408,9 @@
         body.czlonek-ciemny button { background-color: var(--kolor-glowny-czlonek); color: white; border-color: var(--kolor-glowny-czlonek); }
         body.czlonek-ciemny input, body.czlonek-ciemny select { background-color: #3a3a50; color: #f0f0f0; border-color: var(--kolor-glowny-czlonek); }
         body.czlonek-ciemny .file-list a { background-color: #3a3a50; color: #f0f0f0; }
-        
+        body.czlonek-ciemny .modal-content { background-color: #2c2c3e; color: #f0f0f0; border: 1px solid var(--kolor-glowny-czlonek);}
+
+
         /* Panel Administratora */
         .admin-panel-layout { display: flex; flex-direction: row; height: 100%; }
         .admin-nav { display: flex; flex-direction: column; background-color: #2c2c3e; padding: 15px; min-width: 200px; }
@@ -312,6 +432,8 @@
         body.admin-jasny button.delete-btn { background-color: #dc3545; }
         body.admin-jasny input, body.admin-jasny select { background-color: #fff; color: #333; border: 1px solid #ccc; }
         body.admin-jasny input[type="color"]::-webkit-color-swatch { border-color: #ccc; }
+        body.admin-jasny .modal-content { background-color: #fefefe; color: #333; }
+
 
         body.admin-ciemny { background-color: #1e1e2f; color: #f0f0f0; }
         body.admin-ciemny .admin-nav { background-color: #252535; }
@@ -323,6 +445,8 @@
         body.admin-ciemny button.delete-btn { background-color: #dc3545; border: none; }
         body.admin-ciemny input, body.admin-ciemny select { background-color: #2c2c3e; color: #f0f0f0; border: 1px solid var(--kolor-glowny-admin); }
         body.admin-ciemny input[type="color"]::-webkit-color-swatch { border-color: var(--kolor-akcentu-admin); }
+        body.admin-ciemny .modal-content { background-color: #252535; color: #f0f0f0; border: 1px solid var(--kolor-glowny-admin);}
+
 
         @media (max-width: 768px) {
             .admin-panel-layout { flex-direction: column; }
@@ -334,58 +458,96 @@
 <body>
 
     <div id="authContainer" class="auth-container">
-        <!-- Ekran logowania -->
-        <div id="loginScreen" class="auth-form">
-            <h1>Logowanie</h1>
-            <div class="input-group">
-                <i class="fas fa-user"></i>
-                <input type="text" id="imie" placeholder="Imię">
-            </div>
-            <div class="input-group">
-                 <i class="fas fa-user"></i>
-                <input type="text" id="nazwisko" placeholder="Nazwisko">
-            </div>
-            <button id="loginButton">Zaloguj</button>
-            <button id="goToRegisterButton">Zarejestruj</button>
-            <p id="errorMessage"></p>
-        </div>
+        <div class="auth-wrapper">
+            <div class="auth-form-container">
+                <!-- Ekran logowania -->
+                <div id="loginScreen" class="auth-form">
+                    <h1>Logowanie</h1>
+                     <p class="subtitle">Wprowadź swoje dane, aby kontynuować.</p>
+                    <div class="input-group">
+                       <span class="icon">
+                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.571-.67 3.013-1.758 4.017C13.92 13.545 12 16.25 12 16.25s-1.92-2.705-3.742-4.233C7.17 11.013 6.5 9.57 6.5 8a5.5 5.5 0 0 1 5.5-5.5zM12 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/><path d="M12.562 21.313c.28.28.653.437 1.047.437H19.5a2.5 2.5 0 0 0 2.5-2.5v-6.91a.499.499 0 0 0-.494-.5c-.27 0-.503.22-.506.494v6.916a1.5 1.5 0 0 1-1.5 1.5h-5.89c-.19 0-.374-.075-.512-.213l-4.22-4.22a.5.5 0 0 0-.707 0l-4.22 4.22c-.138.138-.322.213-.512.213H2.5a1.5 1.5 0 0 1-1.5-1.5V12.34a.499.499 0 0 0-.506-.494.499.499 0 0 0-.494.5v6.91a2.5 2.5 0 0 0 2.5 2.5h5.89c.394 0 .767-.157 1.047-.437l4.125-4.125 4.125 4.125z"/></svg>
+                       </span>
+                        <input type="text" id="imie" placeholder="Imię">
+                    </div>
+                    <div class="input-group">
+                       <span class="icon">
+                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.571-.67 3.013-1.758 4.017C13.92 13.545 12 16.25 12 16.25s-1.92-2.705-3.742-4.233C7.17 11.013 6.5 9.57 6.5 8a5.5 5.5 0 0 1 5.5-5.5zM12 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/><path d="M12.562 21.313c.28.28.653.437 1.047.437H19.5a2.5 2.5 0 0 0 2.5-2.5v-6.91a.499.499 0 0 0-.494-.5c-.27 0-.503.22-.506.494v6.916a1.5 1.5 0 0 1-1.5 1.5h-5.89c-.19 0-.374-.075-.512-.213l-4.22-4.22a.5.5 0 0 0-.707 0l-4.22 4.22c-.138.138-.322.213-.512.213H2.5a1.5 1.5 0 0 1-1.5-1.5V12.34a.499.499 0 0 0-.506-.494.499.499 0 0 0-.494.5v6.91a2.5 2.5 0 0 0 2.5 2.5h5.89c.394 0 .767-.157 1.047-.437l4.125-4.125 4.125 4.125z"/></svg>
+                       </span>
+                        <input type="text" id="nazwisko" placeholder="Nazwisko">
+                    </div>
+                    <div class="remember-me-container">
+                        <input type="checkbox" id="rememberMe">
+                        <label for="rememberMe">Zapamiętaj mnie</label>
+                    </div>
+                    <button id="loginButton" class="btn-primary">Zaloguj</button>
+                    <button id="goToRegisterButton" class="btn-secondary">Utwórz nowe konto</button>
+                    <p id="errorMessage"></p>
+                </div>
 
-        <!-- Ekran rejestracji -->
-        <div id="registerScreen" class="auth-form" style="display: none;">
-            <h1>Rejestracja</h1>
-            <div class="input-group">
-                <i class="fas fa-user"></i>
-                <input type="text" id="regImie" placeholder="Imię" required>
+                <!-- Ekran rejestracji -->
+                <div id="registerScreen" class="auth-form" style="display: none;">
+                    <h1>Rejestracja</h1>
+                    <p class="subtitle">Dołącz do naszej społeczności graczy.</p>
+                    <div class="input-group">
+                         <span class="icon">
+                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.571-.67 3.013-1.758 4.017C13.92 13.545 12 16.25 12 16.25s-1.92-2.705-3.742-4.233C7.17 11.013 6.5 9.57 6.5 8a5.5 5.5 0 0 1 5.5-5.5zM12 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/><path d="M12.562 21.313c.28.28.653.437 1.047.437H19.5a2.5 2.5 0 0 0 2.5-2.5v-6.91a.499.499 0 0 0-.494-.5c-.27 0-.503.22-.506.494v6.916a1.5 1.5 0 0 1-1.5 1.5h-5.89c-.19 0-.374-.075-.512-.213l-4.22-4.22a.5.5 0 0 0-.707 0l-4.22 4.22c-.138.138-.322.213-.512.213H2.5a1.5 1.5 0 0 1-1.5-1.5V12.34a.499.499 0 0 0-.506-.494.499.499 0 0 0-.494.5v6.91a2.5 2.5 0 0 0 2.5 2.5h5.89c.394 0 .767-.157 1.047-.437l4.125-4.125 4.125 4.125z"/></svg>
+                       </span>
+                        <input type="text" id="regImie" placeholder="Imię" required>
+                    </div>
+                    <div class="input-group">
+                        <span class="icon">
+                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.571-.67 3.013-1.758 4.017C13.92 13.545 12 16.25 12 16.25s-1.92-2.705-3.742-4.233C7.17 11.013 6.5 9.57 6.5 8a5.5 5.5 0 0 1 5.5-5.5zM12 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/><path d="M12.562 21.313c.28.28.653.437 1.047.437H19.5a2.5 2.5 0 0 0 2.5-2.5v-6.91a.499.499 0 0 0-.494-.5c-.27 0-.503.22-.506.494v6.916a1.5 1.5 0 0 1-1.5 1.5h-5.89c-.19 0-.374-.075-.512-.213l-4.22-4.22a.5.5 0 0 0-.707 0l-4.22 4.22c-.138.138-.322.213-.512.213H2.5a1.5 1.5 0 0 1-1.5-1.5V12.34a.499.499 0 0 0-.506-.494.499.499 0 0 0-.494.5v6.91a2.5 2.5 0 0 0 2.5 2.5h5.89c.394 0 .767-.157 1.047-.437l4.125-4.125 4.125 4.125z"/></svg>
+                       </span>
+                        <input type="text" id="regNazwisko" placeholder="Nazwisko" required>
+                    </div>
+                    <div class="input-group">
+                        <span class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.05,20.5A3.5,3.5,0,0,1,2.55,17V7A3.5,3.5,0,0,1,6.05,3.5h11.9A3.5,3.5,0,0,1,21.45,7V17a3.5,3.5,0,0,1-3.5,3.5Zm.5-16A2.5,2.5,0,0,0,4.05,7V17a2.5,2.5,0,0,0,2.5,2.5h11.9a2.5,2.5,0,0,0,2.5-2.5V7a2.5,2.5,0,0,0-2.5-2.5Z"/><path d="M16.5,7.25a.75.75,0,0,0-1.5,0v.5a.75.75,0,0,0,1.5,0Z"/><path d="M15,15.5H9a.75.75,0,0,0,0,1.5h6a.75.75,0,0,0,0-1.5Z"/></svg>
+                        </span>
+                        <input type="tel" id="regTelefon" placeholder="Numer telefonu" required>
+                    </div>
+                    <div class="terms-container">
+                        <input type="checkbox" id="regRegulaminKlubu" required>
+                        <label for="regRegulaminKlubu">Akceptuję <a href="#" id="linkDoRegulaminuKlubu" target="_blank">regulamin klubu</a></label>
+                    </div>
+                    <div class="terms-container">
+                        <input type="checkbox" id="regRegulaminWypozyczania" required>
+                        <label for="regRegulaminWypozyczania">Akceptuję <a href="#" id="linkDoRegulaminuWypozyczania" target="_blank">regulamin wypożyczania gier</a></label>
+                    </div>
+                    <div class="terms-container">
+                        <input type="checkbox" id="regKonstytucja" required>
+                        <label for="regKonstytucja">Akceptuję <a href="#" id="linkDoKonstytucji" target="_blank">konstytucję klubu</a></label>
+                    </div>
+                    <button id="registerButton" class="btn-primary">Zarejestruj się</button>
+                    <button id="backToLoginButton" class="btn-secondary">Masz już konto? Zaloguj się</button>
+                    <p id="regErrorMessage"></p>
+                </div>
             </div>
-             <div class="input-group">
-                <i class="fas fa-user"></i>
-                <input type="text" id="regNazwisko" placeholder="Nazwisko" required>
-            </div>
-             <div class="input-group">
-                <i class="fas fa-phone"></i>
-                <input type="tel" id="regTelefon" placeholder="Numer telefonu" required>
-            </div>
-            <div class="terms-container">
-                <input type="checkbox" id="regRegulamin" required>
-                <label for="regRegulamin">Akceptuję <a href="#" id="linkDoRegulaminu" target="_blank">regulamin</a></label>
-            </div>
-            <button id="registerButton">Zarejestruj się</button>
-            <button id="backToLoginButton">Powrót do logowania</button>
-            <p id="regErrorMessage"></p>
         </div>
     </div>
-    
+
     <div id="appPanel" class="app-panel">
         <!-- Treść aplikacji będzie renderowana tutaj -->
     </div>
+
+    <!-- Modal do edycji formularzy -->
+    <div id="formModal" class="modal">
+        <div class="modal-content">
+            <span id="closeFormModal" style="float:right; cursor:pointer;">&times;</span>
+            <h2 id="formModalTitle">Edytuj</h2>
+            <div id="formModalContent"></div>
+        </div>
+    </div>
     
-    <!-- Modal do edycji -->
-    <div id="editModal" class="modal">
-      <div class="modal-content">
-        <span id="closeModal" style="float:right; cursor:pointer;">&times;</span>
-        <h2>Edytuj</h2>
-        <div id="editModalContent"></div>
-      </div>
+    <!-- Modal do informacji, potwierdzeń i list -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span id="closeInfoModal" style="float:right; cursor:pointer;">&times;</span>
+            <h2 id="infoModalTitle"></h2>
+            <div id="infoModalBody"></div>
+            <div id="infoModalButtons"></div>
+        </div>
     </div>
 
 
@@ -409,32 +571,31 @@
         const appPanel = document.getElementById('appPanel');
         const errorMessage = document.getElementById('errorMessage');
         const regErrorMessage = document.getElementById('regErrorMessage');
-        
+
         let currentUser = null;
         let appSettings = {};
-        
+
         // --- Nawigacja ---
         document.getElementById('goToRegisterButton').addEventListener('click', async () => {
-            if (!Object.keys(appSettings).length) { // Fetch settings if not already loaded
+            if (!Object.keys(appSettings).length) {
                 await fetchAppSettings();
             }
-            const linkRegulaminuEl = document.getElementById('linkDoRegulaminu');
-            if (linkRegulaminuEl) {
-                linkRegulaminuEl.href = appSettings.link_regulaminu || '#';
-            }
+            document.getElementById('linkDoRegulaminuKlubu').href = appSettings.link_regulaminu_klubu || '#';
+            document.getElementById('linkDoRegulaminuWypozyczania').href = appSettings.link_regulaminu_wypozyczania || '#';
+            document.getElementById('linkDoKonstytucji').href = appSettings.link_konstytucji || '#';
             loginScreen.style.display = 'none';
-            registerScreen.style.display = 'flex';
+            registerScreen.style.display = 'block';
         });
 
         document.getElementById('backToLoginButton').addEventListener('click', () => {
             registerScreen.style.display = 'none';
-            loginScreen.style.display = 'flex';
+            loginScreen.style.display = 'block';
         });
-        
+
         // --- Funkcje pomocnicze ---
         function showMessage(element, message, isError = true) {
             element.textContent = message;
-            element.style.color = isError ? '#dc3545' : '#28a745';
+            element.style.color = isError ? 'var(--kolor-bledu)' : '#28a745';
         }
 
         async function fetchAppSettings() {
@@ -447,14 +608,18 @@
                     console.log("Brak dokumentu z ustawieniami, tworzę domyślny.");
                     const defaultSettings = {
                         kod_do_klodki: "11111",
-                        link_regulaminu: "#",
+                        link_regulaminu_klubu: "#",
+                        link_regulaminu_wypozyczania: "#",
+                        link_konstytucji: "#",
                         podstawowy_motyw: "jasny",
                         podstawowy_kolor_glowny: "#a6ce39",
                         czlonek_motyw: "ciemny",
                         czlonek_kolor_glowny: "#642888",
                         admin_motyw: "ciemny",
                         admin_kolor_glowny: "#642888",
-                        admin_kolor_akcentu: "#FFD700"
+                        admin_kolor_akcentu: "#FFD700",
+                        limit_wypozyczen: 5,
+                        limit_dni_wypozyczenia: 14
                     };
                     await settingsRef.set(defaultSettings);
                     appSettings = defaultSettings;
@@ -489,8 +654,21 @@
             document.body.className = themeClass;
         }
 
-        function renderApp() {
+        async function renderApp() {
             if (!currentUser) return;
+
+             // Check for expired ban on render
+            if (currentUser.ban && currentUser.ban.active && currentUser.ban.expires) {
+                 const expiryDate = new Date(currentUser.ban.expires.seconds * 1000);
+                if (expiryDate <= new Date()) {
+                    console.log("Ban expired. Unbanning user.");
+                    await db.collection('uzytkownicy').doc(currentUser.id).update({ ban: { active: false } });
+                    currentUser.ban.active = false; // Update local user object
+                    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+            }
+
+
             applyTheme();
 
             switch (currentUser.poziom_uprawnien) {
@@ -526,7 +704,19 @@
                     return showMessage(errorMessage, "Nie znaleziono użytkownika.");
                 }
                 
-                currentUser = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+                const rememberMeCheckbox = document.getElementById('rememberMe');
+                if (rememberMeCheckbox.checked) {
+                    localStorage.setItem('loginImie', imie);
+                    localStorage.setItem('loginNazwisko', nazwisko);
+                } else {
+                    localStorage.removeItem('loginImie');
+                    localStorage.removeItem('loginNazwisko');
+                }
+
+                currentUser = {
+                    id: snapshot.docs[0].id,
+                    ...snapshot.docs[0].data()
+                };
                 sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
                 await fetchAppSettings();
                 renderApp();
@@ -541,13 +731,15 @@
             const imie = document.getElementById('regImie').value.trim();
             const nazwisko = document.getElementById('regNazwisko').value.trim();
             const numer_telefonu = document.getElementById('regTelefon').value.trim();
-            const regulaminChecked = document.getElementById('regRegulamin').checked;
+            const regulaminKlubuChecked = document.getElementById('regRegulaminKlubu').checked;
+            const regulaminWypozyczaniaChecked = document.getElementById('regRegulaminWypozyczania').checked;
+            const konstytucjaChecked = document.getElementById('regKonstytucja').checked;
 
             if (!imie || !nazwisko || !numer_telefonu) {
                 return showMessage(regErrorMessage, "Wszystkie pola są wymagane.");
             }
-            if (!regulaminChecked) {
-                return showMessage(regErrorMessage, "Musisz zaakceptować regulamin.");
+            if (!regulaminKlubuChecked || !regulaminWypozyczaniaChecked || !konstytucjaChecked) {
+                return showMessage(regErrorMessage, "Musisz zaakceptować wszystkie dokumenty.");
             }
 
             try {
@@ -570,8 +762,10 @@
                 showMessage(regErrorMessage, "Rejestracja pomyślna! Możesz się teraz zalogować.", false);
                 setTimeout(() => {
                     registerScreen.style.display = 'none';
-                    loginScreen.style.display = 'flex';
-                    document.getElementById('regRegulamin').checked = false; // Reset checkbox
+                    loginScreen.style.display = 'block';
+                    document.getElementById('regRegulaminKlubu').checked = false;
+                    document.getElementById('regRegulaminWypozyczania').checked = false;
+                    document.getElementById('regKonstytucja').checked = false;
                 }, 2000);
 
             } catch (error) {
@@ -586,7 +780,7 @@
             appPanel.innerHTML = '';
             appPanel.style.display = 'none';
             authContainer.style.display = 'flex';
-            loginScreen.style.display = 'flex';
+            loginScreen.style.display = 'block';
             registerScreen.style.display = 'none';
             document.body.className = '';
         }
@@ -606,32 +800,32 @@
                 </div>
             `;
         }
-        
+
         function getPrimaryColor(poziom) {
-            switch(poziom) {
-                case 'podstawowy': return appSettings.podstawowy_kolor_glowny;
-                case 'członek klubu': return appSettings.czlonek_kolor_glowny;
-                case 'administrator': return appSettings.admin_kolor_glowny;
-                default: return '#6c757d';
+            switch (poziom) {
+                case 'podstawowy':
+                    return appSettings.podstawowy_kolor_glowny;
+                case 'członek klubu':
+                    return appSettings.czlonek_kolor_glowny;
+                case 'administrator':
+                    return appSettings.admin_kolor_glowny;
+                default:
+                    return '#6c757d';
             }
         }
 
         async function renderBasicPanel(user) {
             const header = await renderHeader(user);
             const myRentalsTable = await getMyRentalsTable(user.id);
-            const meetingsList = await getMeetingsList();
+            const meetingsList = await getMeetingsList(user);
+            const documentsHtml = getDocumentsHtml();
+            const borrowGameHtml = getBorrowGameHtml(user);
 
             appPanel.innerHTML = `
                 ${header}
                 <div class="app-content">
                     <div class="grid-container">
-                        <div class="grid-item">
-                            <h3>Wypożycz Grę</h3>
-                            <form id="wypozyczForm">
-                                <input type="number" id="numerGry" placeholder="Wpisz 4-cyfrowy numer gry" required>
-                                <button type="submit">Wypożycz</button>
-                            </form>
-                        </div>
+                        ${borrowGameHtml}
                         <div class="grid-item">
                             <h3>Spotkania Klubu</h3>
                             ${meetingsList}
@@ -640,32 +834,32 @@
                             <h3>Moje Wypożyczone Gry</h3>
                             ${myRentalsTable}
                         </div>
+                        ${documentsHtml}
                     </div>
                 </div>
             `;
-            document.getElementById('wypozyczForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                wypozyczGre(user);
-            });
+            const wypozyczForm = document.getElementById('wypozyczForm');
+            if(wypozyczForm) {
+                wypozyczForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    wypozyczGre(user);
+                });
+            }
         }
-        
+
         async function renderMemberPanel(user) {
             const header = await renderHeader(user);
             const myRentalsTable = await getMyRentalsTable(user.id);
-            const meetingsList = await getMeetingsList();
+            const meetingsList = await getMeetingsList(user);
             const linksList = await getLinksList(false);
+            const documentsHtml = getDocumentsHtml();
+            const borrowGameHtml = getBorrowGameHtml(user);
 
             appPanel.innerHTML = `
                 ${header}
                 <div class="app-content">
                     <div class="grid-container">
-                        <div class="grid-item">
-                            <h3>Wypożycz Grę</h3>
-                            <form id="wypozyczForm">
-                                <input type="number" id="numerGry" placeholder="Wpisz 4-cyfrowy numer gry" required>
-                                <button type="submit">Wypożycz</button>
-                            </form>
-                        </div>
+                        ${borrowGameHtml}
                          <div class="grid-item">
                             <h3>Linki</h3>
                             <div class="file-list">${linksList}</div>
@@ -678,26 +872,43 @@
                             <h3>Moje Wypożyczone Gry</h3>
                             ${myRentalsTable}
                         </div>
+                        ${documentsHtml}
                     </div>
                 </div>
             `;
-             document.getElementById('wypozyczForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                wypozyczGre(user);
-            });
+             const wypozyczForm = document.getElementById('wypozyczForm');
+            if(wypozyczForm) {
+                wypozyczForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    wypozyczGre(user);
+                });
+            }
         }
-        
+
         async function renderAdminPanel(user, activeTab = 'admin-borrow') {
             const header = await renderHeader(user);
-            const tabs = [
-                { id: 'admin-borrow', name: 'Wypożycz Grę' },
-                { id: 'admin-users', name: 'Użytkownicy' },
-                { id: 'admin-games', name: 'Gry' },
-                { id: 'admin-rentals', name: 'Wypożyczenia' },
-                { id: 'admin-links', name: 'Linki' },
-                { id: 'admin-meetings', name: 'Spotkania' },
-                { id: 'admin-settings', name: 'Ustawienia' }
-            ];
+            const tabs = [{
+                id: 'admin-borrow',
+                name: 'Wypożycz Grę'
+            }, {
+                id: 'admin-users',
+                name: 'Użytkownicy'
+            }, {
+                id: 'admin-games',
+                name: 'Gry'
+            }, {
+                id: 'admin-rentals',
+                name: 'Wypożyczenia'
+            }, {
+                id: 'admin-links',
+                name: 'Linki'
+            }, {
+                id: 'admin-meetings',
+                name: 'Spotkania'
+            }, {
+                id: 'admin-settings',
+                name: 'Ustawienia'
+            }];
 
             appPanel.innerHTML = `
                 ${header}
@@ -710,16 +921,16 @@
                     </main>
                 </div>
             `;
-            
+
             await renderAdminTabContent(activeTab, user, true); // Force re-render
-            
+
             appPanel.querySelector('.admin-nav').addEventListener('click', async (e) => {
                 if (e.target.classList.contains('admin-nav-link')) {
                     const tabId = e.target.dataset.tab;
                     if (document.querySelector('.admin-nav-link.active')) {
                         document.querySelector('.admin-nav-link.active').classList.remove('active');
                     }
-                     if (document.querySelector('.admin-tab-pane.active')) {
+                    if (document.querySelector('.admin-tab-pane.active')) {
                         document.querySelector('.admin-tab-pane.active').classList.remove('active');
                     }
                     e.target.classList.add('active');
@@ -728,18 +939,21 @@
                 }
             });
         }
-        
+
         async function renderAdminTabContent(tabId, user, forceRender = false) {
             const contentEl = document.getElementById(`${tabId}-content`);
             if (!contentEl) return;
             if (contentEl.innerHTML.trim() !== '' && !forceRender) return;
 
-            switch(tabId) {
+            switch (tabId) {
                 case 'admin-borrow':
+                    const today = new Date().toISOString().split('T')[0];
                     contentEl.innerHTML = `
                         <h3>Wypożycz Grę</h3>
                         <form id="wypozyczForm">
                             <input type="number" id="numerGry" placeholder="Wpisz 4-cyfrowy numer gry" required>
+                            <label for="dataZwrotu" style="margin-top: 10px; display: block;">Przewidywana data zwrotu:</label>
+                            <input type="date" id="dataZwrotu" required min="${today}">
                             <button type="submit">Wypożycz</button>
                         </form>
                     `;
@@ -776,26 +990,63 @@
         }
 
         // --- Logika biznesowa (wypożyczenia, zwroty etc.) ---
-        
+
         async function wypozyczGre(user) {
-            const numerGry = parseInt(document.getElementById('numerGry').value, 10);
-            if (!numerGry) {
-                alert("Podaj numer gry.");
+            if (user.ban && user.ban.active) {
+                showCustomAlert("Zablokowane", "Twoje konto jest zablokowane. Nie możesz wypożyczać gier.", true);
                 return;
             }
+             // Administratorzy są wyłączeni z limitu
+            if (user.poziom_uprawnien !== 'administrator') {
+                const borrowLimit = appSettings.limit_wypozyczen;
+                // Limit 0 oznacza brak limitu
+                if (borrowLimit && borrowLimit > 0) {
+                    const activeRentalsSnapshot = await db.collection('wypozyczenia')
+                        .where('uzytkownik_id', '==', user.id)
+                        .where('status', '==', 'aktywne')
+                        .get();
+
+                    if (activeRentalsSnapshot.size >= borrowLimit) {
+                        showCustomAlert("Limit osiągnięty", `Osiągnięto limit wypożyczonych gier (${borrowLimit}). Zwróć grę, aby wypożyczyć nową.`, true);
+                        return;
+                    }
+                }
+            }
+
+            const numerGry = parseInt(document.getElementById('numerGry').value, 10);
+            const dataZwrotuValue = document.getElementById('dataZwrotu').value;
+
+            if (!numerGry) {
+                showCustomAlert("Brak danych", "Podaj numer gry.", true);
+                return;
+            }
+            if (!dataZwrotuValue) {
+                showCustomAlert("Brak danych", "Proszę wybrać przewidywaną datę zwrotu.", true);
+                return;
+            }
+
+            const przewidywanaDataZwrotu = new Date(dataZwrotuValue);
+            const dzis = new Date();
+            dzis.setHours(0, 0, 0, 0); 
+
+            if(przewidywanaDataZwrotu < dzis) {
+                showCustomAlert("Nieprawidłowa data", "Data zwrotu nie może być z przeszłości.", true);
+                return;
+            }
+
             try {
                 const gamesRef = db.collection('gry');
                 const gameSnapshot = await gamesRef.where('numer_gry', '==', numerGry).limit(1).get();
                 if (gameSnapshot.empty) {
-                    alert("Gra o podanym numerze nie istnieje.");
+                    showCustomAlert("Błąd", "Gra o podanym numerze nie istnieje.", true);
                     return;
                 }
                 const gameDoc = gameSnapshot.docs[0];
                 if (!gameDoc.data().dostepnosc) {
-                    alert("Ta gra jest aktualnie wypożyczona.");
+                    showCustomAlert("Gra niedostępna", "Ta gra jest aktualnie wypożyczona.", true);
                     return;
                 }
-                
+
                 await db.collection('wypozyczenia').add({
                     uzytkownik_id: user.id,
                     imie_nazwisko: `${user.imie} ${user.nazwisko}`,
@@ -803,33 +1054,51 @@
                     numer_gry: numerGry,
                     nazwa_gry: gameDoc.data().nazwa_gry,
                     data_wypozyczenia: new Date(),
+                    przewidywana_data_zwrotu: przewidywanaDataZwrotu,
                     status: 'aktywne'
                 });
-                
-                await gamesRef.doc(gameDoc.id).update({ dostepnosc: false });
-                alert("Gra została pomyślnie wypożyczona!");
+
+                await gamesRef.doc(gameDoc.id).update({
+                    dostepnosc: false
+                });
+                showCustomAlert("Sukces!", "Gra została pomyślnie wypożyczona!");
                 renderApp(); // Refresh view
-            } catch(error) {
+            } catch (error) {
                 console.error("Błąd przy wypożyczaniu gry:", error);
-                alert("Wystąpił błąd.");
+                showCustomAlert("Błąd", "Wystąpił błąd podczas wypożyczania.", true);
             }
+        }
+
+        async function zwrocGre(wypozyczenieId, graId) {
+             showCustomConfirm('Potwierdzenie', 'Czy na pewno chcesz zwrócić tę grę?', async () => {
+                try {
+                    await db.collection('wypozyczenia').doc(wypozyczenieId).update({
+                        status: 'zakończone',
+                        data_zwrotu: new Date()
+                    });
+                    await db.collection('gry').doc(graId).update({ dostepnosc: true });
+                    showCustomAlert("Sukces", "Gra została zwrócona.");
+                    renderApp();
+                } catch (error) {
+                    console.error("Błąd przy zwrocie gry:", error);
+                    showCustomAlert("Błąd", "Wystąpił błąd.", true);
+                }
+            });
         }
         
-        async function zwrocGre(wypozyczenieId, graId) {
-             if (!confirm("Czy na pewno chcesz zwrócić tę grę?")) return;
+         async function markAttendance(meetingId, userId) {
             try {
-                await db.collection('wypozyczenia').doc(wypozyczenieId).update({
-                    status: 'zakończone',
-                    data_zwrotu: new Date()
+                const meetingRef = db.collection('spotkania').doc(meetingId);
+                await meetingRef.update({
+                    attendees: firebase.firestore.FieldValue.arrayUnion(userId)
                 });
-                await db.collection('gry').doc(graId).update({ dostepnosc: true });
-                alert("Gra została zwrócona.");
-                renderApp();
+                await renderApp();
             } catch (error) {
-                console.error("Błąd przy zwrocie gry:", error);
-                alert("Wystąpił błąd.");
+                console.error("Błąd podczas zapisywania obecności:", error);
+                showCustomAlert("Błąd", "Wystąpił błąd.", true);
             }
         }
+
 
         // --- Funkcje pobierające dane ---
         async function getMyRentalsTable(userId) {
@@ -839,15 +1108,31 @@
                 .get();
 
             if (snapshot.empty) return "<p>Nie masz aktualnie wypożyczonych gier.</p>";
-            
-            let table = `<table><thead><tr><th>Nr Gry</th><th>Nazwa</th><th>Data Wypożyczenia</th><th>Akcje</th></tr></thead><tbody>`;
+
+            let table = `<table><thead><tr><th>Nr Gry</th><th>Nazwa</th><th>Data Wypożyczenia</th><th>Przewidywany Zwrot</th><th>Akcje</th></tr></thead><tbody>`;
             snapshot.forEach(doc => {
                 const rental = doc.data();
+                const rentalDate = rental.data_wypozyczenia.toDate();
+                const limitDays = appSettings.limit_dni_wypozyczenia || 0;
+                let isOverdue = false;
+
+                if (limitDays > 0) {
+                    const dueDate = new Date(rentalDate);
+                    dueDate.setDate(dueDate.getDate() + limitDays);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); 
+                    if (today > dueDate) {
+                        isOverdue = true;
+                    }
+                }
+                const przewidywanyZwrot = rental.przewidywana_data_zwrotu ? rental.przewidywana_data_zwrotu.toDate().toLocaleDateString() : '-';
+
                 table += `
-                    <tr>
+                    <tr style="${isOverdue ? 'background-color: #ffdddd;' : ''}">
                         <td>${rental.numer_gry}</td>
                         <td>${rental.nazwa_gry}</td>
-                        <td>${rental.data_wypozyczenia.toDate().toLocaleDateString()}</td>
+                        <td>${rentalDate.toLocaleDateString()}</td>
+                        <td>${przewidywanyZwrot}</td>
                         <td><button onclick="zwrocGre('${doc.id}', '${rental.gra_id}')">Zwróć</button></td>
                     </tr>
                 `;
@@ -856,37 +1141,96 @@
             return table;
         }
 
-        async function getMeetingsList() {
+        async function getMeetingsList(user) {
             const snapshot = await db.collection('spotkania').orderBy('data_spotkania', 'desc').get();
             if (snapshot.empty) return "<p>Brak zaplanowanych spotkań.</p>";
 
-            let list = '<ul>';
+            let list = '<div>';
             const now = new Date();
             snapshot.forEach(doc => {
                 const spotkanie = doc.data();
                 const dataSpotkania = spotkanie.data_spotkania.toDate();
-                const isPast = dataSpotkania < now;
+                
+                const endOfAttendance = new Date(dataSpotkania);
+                endOfAttendance.setDate(endOfAttendance.getDate() + 1);
+                endOfAttendance.setHours(23, 59, 59, 999);
+
+                const isPast = now > endOfAttendance;
+                const isFuture = now < dataSpotkania;
+                const isActive = !isPast && !isFuture;
+                
+                const hasAttended = spotkanie.attendees && spotkanie.attendees.includes(user.id);
+                
+                let actionButton = '';
+                if(isActive && !user.ban?.active) {
+                    if(hasAttended) {
+                        actionButton = `<button disabled>Obecny</button>`;
+                    } else {
+                        actionButton = `<button onclick="markAttendance('${doc.id}', '${user.id}')">Zaznacz obecność</button>`;
+                    }
+                }
+
                 list += `
-                    <li style="${isPast ? 'text-decoration: line-through; opacity: 0.6;' : ''}">
-                        ${dataSpotkania.toLocaleString('pl-PL')}
-                    </li>
+                    <div class="meeting-item ${isPast ? 'past' : ''}">
+                        <span>${dataSpotkania.toLocaleString('pl-PL')}</span>
+                        ${actionButton}
+                    </div>
                 `;
             });
-            list += '</ul>';
+            list += '</div>';
             return list;
         }
-        
+
         async function getLinksList() {
-             const snapshot = await db.collection('pliki').get();
-             if (snapshot.empty) return "<p>Brak linków.</p>";
-             return snapshot.docs.map(doc => {
-                 const plik = doc.data();
-                 return `<a href="${plik.link}" target="_blank" style="display:block; margin-bottom: 8px; padding: 10px; text-decoration: none; border-radius: 5px;">${plik.nazwa}</a>`;
-             }).join('');
+            const snapshot = await db.collection('pliki').get();
+            if (snapshot.empty) return "<p>Brak linków.</p>";
+            return snapshot.docs.map(doc => {
+                const plik = doc.data();
+                return `<a href="${plik.link}" target="_blank" style="display:block; margin-bottom: 8px; padding: 10px; text-decoration: none; border-radius: 5px;">${plik.nazwa}</a>`;
+            }).join('');
         }
         
-        // --- Funkcje i odświeżanie dla panelu ADMINA ---
+        function getDocumentsHtml() {
+            return `
+                <div class="grid-item">
+                    <h3>Dokumenty Klubu</h3>
+                    <a href="${appSettings.link_regulaminu_klubu || '#'}" target="_blank" class="doc-button">Regulamin Klubu</a>
+                    <a href="${appSettings.link_regulaminu_wypozyczania || '#'}" target="_blank" class="doc-button">Regulamin Wypożyczania</a>
+                    <a href="${appSettings.link_konstytucji || '#'}" target="_blank" class="doc-button">Konstytucja Klubu</a>
+                </div>
+            `;
+        }
         
+        function getBorrowGameHtml(user) {
+            if (user.ban && user.ban.active) {
+                let message = '';
+                if (user.ban.permanent) {
+                    message = `<p style="color: var(--kolor-bledu); font-weight: 500;">Twoje konto jest zablokowane na stałe.</p>`;
+                } else if (user.ban.expires) {
+                    const expiryDate = new Date(user.ban.expires.seconds * 1000);
+                    const remainingDays = Math.ceil((expiryDate - new Date()) / (1000 * 60 * 60 * 24));
+                    message = `
+                        <p style="color: var(--kolor-bledu); font-weight: 500;">Twoje konto jest zablokowane. Nie możesz wypożyczać gier.</p>
+                        <p>Koniec blokady za: <strong>${remainingDays > 0 ? remainingDays : 0} dni</strong></p>`;
+                }
+                return `<div class="grid-item"><h3>Wypożycz Grę</h3>${message}</div>`;
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            return `
+                <div class="grid-item" id="borrow-game-section">
+                    <h3>Wypożycz Grę</h3>
+                    <form id="wypozyczForm">
+                        <input type="number" id="numerGry" placeholder="Wpisz 4-cyfrowy numer gry" required>
+                        <label for="dataZwrotu" style="margin-top: 10px; display: block;">Przewidywana data zwrotu:</label>
+                        <input type="date" id="dataZwrotu" required min="${today}">
+                        <button type="submit">Wypożycz</button>
+                    </form>
+                </div>`;
+        }
+
+        // --- Funkcje i odświeżanie dla panelu ADMINA ---
+
         function getActiveAdminTab() {
             const activeLink = document.querySelector('.admin-nav-link.active');
             return activeLink ? activeLink.dataset.tab : 'admin-borrow';
@@ -904,18 +1248,37 @@
                 </form>
             `;
             const snapshot = await db.collection('uzytkownicy').get();
-            content += '<table><thead><tr><th>Imię</th><th>Nazwisko</th><th>Telefon</th><th>Poziom</th><th>Akcje</th></tr></thead><tbody>';
+            content += '<table><thead><tr><th>Imię</th><th>Nazwisko</th><th>Telefon</th><th>Poziom</th><th>Status</th><th>Akcje</th></tr></thead><tbody>';
             snapshot.forEach(doc => {
                 const user = doc.data();
+                let status = '<span style="color: green;">Aktywny</span>';
+                let banActions = `<button onclick="banUser('${doc.id}', '6m')">Ban 6m</button> <button class="delete-btn" onclick="banUser('${doc.id}', 'permanent')">Ban na zawsze</button>`;
+
+                if (user.ban && user.ban.active) {
+                    if (user.ban.permanent) {
+                        status = '<span style="color: red;">Zbanowany (na stałe)</span>';
+                    } else if (user.ban.expires) {
+                         const expiryDate = new Date(user.ban.expires.seconds * 1000);
+                        if (expiryDate > new Date()) {
+                            status = `<span style="color: orange;">Zbanowany (do ${expiryDate.toLocaleDateString()})</span>`;
+                        }
+                    }
+                    banActions = `<button class="edit-btn" onclick="unbanUser('${doc.id}')">Odbanuj</button>`;
+                }
+
+
                 content += `
                     <tr>
                         <td>${user.imie}</td>
                         <td>${user.nazwisko}</td>
                         <td>${user.numer_telefonu || '-'}</td>
                         <td>${user.poziom_uprawnien}</td>
+                        <td>${status}</td>
                         <td>
                             <button class="edit-btn" onclick="openEditModal('user', '${doc.id}')">Edytuj</button>
                             <button class="delete-btn" onclick="usunUzytkownika('${doc.id}')">Usuń</button>
+                            ${banActions}
+                             <button onclick="showUserAttendanceHistory('${doc.id}', '${user.imie} ${user.nazwisko}')">Historia</button>
                         </td>
                     </tr>
                 `;
@@ -924,36 +1287,83 @@
             container.innerHTML = content;
             document.getElementById('admin-add-user-form').addEventListener('submit', dodajUzytkownika);
         }
-        
+
         async function dodajUzytkownika(e) {
             e.preventDefault();
             const imie = document.getElementById('admin-new-user-imie').value;
             const nazwisko = document.getElementById('admin-new-user-nazwisko').value;
             const numer_telefonu = document.getElementById('admin-new-user-telefon').value;
-            if (!imie || !nazwisko || !numer_telefonu) { alert("Wypełnij wszystkie pola"); return; }
+            if (!imie || !nazwisko || !numer_telefonu) {
+                 showCustomAlert("Błąd", "Wypełnij wszystkie pola", true);
+                return;
+            }
             try {
-                await db.collection('uzytkownicy').add({ imie, nazwisko, numer_telefonu, poziom_uprawnien: 'podstawowy', data_rejestracji: new Date() });
+                await db.collection('uzytkownicy').add({
+                    imie,
+                    nazwisko,
+                    numer_telefonu,
+                    poziom_uprawnien: 'podstawowy',
+                    data_rejestracji: new Date()
+                });
                 await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
-            } catch(err) { console.error(err); alert("Błąd"); }
-        }
-        
-        async function usunUzytkownika(id) {
-            if (confirm("Na pewno usunąć użytkownika?")) {
-                try {
-                    await db.collection('uzytkownicy').doc(id).delete();
-                    await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
-                } catch(err) { console.error(err); alert("Błąd"); }
+            } catch (err) {
+                console.error(err);
+                showCustomAlert("Błąd", "Wystąpił błąd podczas dodawania użytkownika.", true);
             }
         }
+
+        async function usunUzytkownika(id) {
+            showCustomConfirm('Potwierdzenie', 'Na pewno usunąć użytkownika?', async () => {
+                 try {
+                    await db.collection('uzytkownicy').doc(id).delete();
+                    await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+                } catch(err) { console.error(err); showCustomAlert("Błąd", "Wystąpił błąd.", true); }
+            });
+        }
         
+        async function banUser(id, duration) {
+            showCustomConfirm('Potwierdzenie', 'Czy na pewno chcesz nałożyć bana na tego użytkownika?', async () => {
+                let banData = { active: true };
+                if (duration === 'permanent') {
+                    banData.permanent = true;
+                } else if (duration === '6m') {
+                    const expiryDate = new Date();
+                    expiryDate.setMonth(expiryDate.getMonth() + 6);
+                    banData.expires = expiryDate;
+                }
+
+                try {
+                    await db.collection('uzytkownicy').doc(id).update({ ban: banData });
+                    await refreshUsersTable();
+                } catch (err) {
+                    console.error("Błąd podczas banowania użytkownika:", err);
+                    showCustomAlert("Błąd", "Wystąpił błąd.", true);
+                }
+            });
+        }
+
+        async function unbanUser(id) {
+            showCustomConfirm('Potwierdzenie', 'Czy na pewno chcesz zdjąć bana z tego użytkownika?', async () => {
+                try {
+                    await db.collection('uzytkownicy').doc(id).update({
+                        ban: { active: false }
+                    });
+                    await refreshUsersTable();
+                } catch (err) {
+                    console.error("Błąd podczas odbanowywania użytkownika:", err);
+                    showCustomAlert("Błąd", "Wystąpił błąd.", true);
+                }
+            });
+        }
+
         async function refreshGamesTable() {
             const container = document.getElementById('gamesTableContainer');
             if (!container) return;
             let content = `
                  <form id="admin-add-game-form">
-                    <input type="text" id="admin-new-game-name" placeholder="Nazwa gry" required>
-                    <button type="submit">Dodaj Grę</button>
-                </form>
+                     <input type="text" id="admin-new-game-name" placeholder="Nazwa gry" required>
+                     <button type="submit">Dodaj Grę</button>
+                 </form>
             `;
             const snapshot = await db.collection('gry').orderBy('numer_gry').get();
             content += '<table><thead><tr><th>Nr</th><th>Nazwa</th><th>Dostępność</th><th>Akcje</th></tr></thead><tbody>';
@@ -979,37 +1389,67 @@
         async function dodajGre(e) {
             e.preventDefault();
             const nazwa_gry = document.getElementById('admin-new-game-name').value;
-            if (!nazwa_gry) { alert("Podaj nazwę gry"); return; }
+            if (!nazwa_gry) {
+                 showCustomAlert("Błąd", "Podaj nazwę gry", true);
+                return;
+            }
             try {
                 const lastGameSnapshot = await db.collection('gry').orderBy('numer_gry', 'desc').limit(1).get();
                 const nextNumber = lastGameSnapshot.empty ? 1 : lastGameSnapshot.docs[0].data().numer_gry + 1;
-                await db.collection('gry').add({ nazwa_gry, numer_gry: nextNumber, dostepnosc: true });
+                await db.collection('gry').add({
+                    nazwa_gry,
+                    numer_gry: nextNumber,
+                    dostepnosc: true
+                });
                 await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
-            } catch(err) { console.error(err); alert("Błąd"); }
+            } catch (err) {
+                console.error(err);
+                showCustomAlert("Błąd", "Wystąpił błąd.", true);
+            }
         }
 
         async function usunGre(id) {
-             if (confirm("Na pewno usunąć grę?")) {
+             showCustomConfirm('Potwierdzenie', 'Na pewno usunąć grę?', async () => {
                 try {
                     await db.collection('gry').doc(id).delete();
                     await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
-                } catch(err) { console.error(err); alert("Błąd"); }
-            }
+                } catch(err) { console.error(err); showCustomAlert("Błąd", "Wystąpił błąd.", true); }
+            });
         }
-        
+
         async function refreshRentalsTable() {
-             const container = document.getElementById('rentalsTableContainer');
+            const container = document.getElementById('rentalsTableContainer');
             if (!container) return;
             const snapshot = await db.collection('wypozyczenia').orderBy('data_wypozyczenia', 'desc').get();
-            let content = '<table><thead><tr><th>Nr Gry</th><th>Nazwa Gry</th><th>Wypożyczający</th><th>Data Wypożyczenia</th><th>Data Zwrotu</th><th>Akcje</th></tr></thead><tbody>';
+            let content = '<table><thead><tr><th>Nr Gry</th><th>Nazwa Gry</th><th>Wypożyczający</th><th>Data Wypożyczenia</th><th>Przewidywany Zwrot</th><th>Data Zwrotu</th><th>Akcje</th></tr></thead><tbody>';
             snapshot.forEach(doc => {
                 const rental = doc.data();
+                let rowStyle = '';
+
+                if (rental.status === 'zakończone') {
+                    rowStyle = 'opacity: 0.5';
+                } else {
+                    const limitDays = appSettings.limit_dni_wypozyczenia || 0;
+                    if (limitDays > 0) {
+                        const rentalDate = rental.data_wypozyczenia.toDate();
+                        const dueDate = new Date(rentalDate);
+                        dueDate.setDate(dueDate.getDate() + limitDays);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        if (today > dueDate) {
+                            rowStyle = 'background-color: #ffdddd;';
+                        }
+                    }
+                }
+                
+                const przewidywanyZwrot = rental.przewidywana_data_zwrotu ? rental.przewidywana_data_zwrotu.toDate().toLocaleDateString() : '-';
                 content += `
-                    <tr style="${rental.status === 'zakończone' ? 'opacity: 0.5' : ''}">
+                    <tr style="${rowStyle}">
                         <td>${rental.numer_gry}</td>
                         <td>${rental.nazwa_gry}</td>
                         <td>${rental.imie_nazwisko}</td>
                         <td>${rental.data_wypozyczenia.toDate().toLocaleDateString()}</td>
+                        <td>${przewidywanyZwrot}</td>
                         <td>${rental.data_zwrotu ? rental.data_zwrotu.toDate().toLocaleDateString() : '-'}</td>
                         <td>${rental.status === 'aktywne' ? `<button onclick="zwrocGre('${doc.id}', '${rental.gra_id}')">Oznacz jako zwrócone</button>` : 'Zwrócono'}</td>
                     </tr>
@@ -1053,22 +1493,31 @@
             e.preventDefault();
             const nazwa = document.getElementById('admin-new-link-name').value;
             const link = document.getElementById('admin-new-link-url').value;
-            if (!nazwa || !link) { alert("Wypełnij oba pola"); return; }
+            if (!nazwa || !link) {
+                 showCustomAlert("Błąd", "Wypełnij oba pola", true);
+                return;
+            }
             try {
-                await db.collection('pliki').add({ nazwa, link });
+                await db.collection('pliki').add({
+                    nazwa,
+                    link
+                });
                 await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
-            } catch(err) { console.error(err); alert("Błąd"); }
+            } catch (err) {
+                console.error(err);
+                showCustomAlert("Błąd", "Wystąpił błąd.", true);
+            }
         }
 
         async function usunLink(id) {
-            if (confirm("Na pewno usunąć link?")) {
+            showCustomConfirm('Potwierdzenie', 'Na pewno usunąć link?', async () => {
                 try {
                     await db.collection('pliki').doc(id).delete();
-                   await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
-                } catch(err) { console.error(err); alert("Błąd"); }
-            }
+                    await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+                } catch(err) { console.error(err); showCustomAlert("Błąd", "Wystąpił błąd.", true); }
+            });
         }
-        
+
         async function refreshMeetingsTable() {
             const container = document.getElementById('meetingsTableContainer');
             if (!container) return;
@@ -1079,13 +1528,16 @@
                 </form>
             `;
             const snapshot = await db.collection('spotkania').orderBy('data_spotkania', 'desc').get();
-            content += '<table><thead><tr><th>Data Spotkania</th><th>Akcje</th></tr></thead><tbody>';
+            content += '<table><thead><tr><th>Data Spotkania</th><th>Obecni</th><th>Akcje</th></tr></thead><tbody>';
             snapshot.forEach(doc => {
                 const spotkanie = doc.data();
+                const attendeeCount = spotkanie.attendees ? spotkanie.attendees.length : 0;
                 content += `
                     <tr>
                         <td>${spotkanie.data_spotkania.toDate().toLocaleString('pl-PL')}</td>
+                        <td>${attendeeCount}</td>
                         <td>
+                             <button onclick="showMeetingAttendees('${doc.id}')">Pokaż obecnych</button>
                             <button class="edit-btn" onclick="openEditModal('meeting', '${doc.id}')">Edytuj</button>
                             <button class="delete-btn" onclick="usunSpotkanie('${doc.id}')">Usuń</button>
                         </td>
@@ -1096,26 +1548,35 @@
             container.innerHTML = content;
             document.getElementById('admin-add-meeting-form').addEventListener('submit', dodajSpotkanie);
         }
-        
+
         async function dodajSpotkanie(e) {
             e.preventDefault();
             const data_spotkania_str = document.getElementById('admin-new-meeting-date').value;
-            if (!data_spotkania_str) { alert("Wybierz datę i godzinę"); return; }
+            if (!data_spotkania_str) {
+                showCustomAlert("Błąd", "Wybierz datę i godzinę", true);
+                return;
+            }
             try {
-                await db.collection('spotkania').add({ data_spotkania: new Date(data_spotkania_str) });
+                await db.collection('spotkania').add({
+                    data_spotkania: new Date(data_spotkania_str),
+                    attendees: []
+                });
                 await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
-            } catch(err) { console.error(err); alert("Błąd"); }
-        }
-        
-        async function usunSpotkanie(id) {
-             if (confirm("Na pewno usunąć spotkanie?")) {
-                try {
-                    await db.collection('spotkania').doc(id).delete();
-                    await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
-                } catch(err) { console.error(err); alert("Błąd"); }
+            } catch (err) {
+                console.error(err);
+                showCustomAlert("Błąd", "Wystąpił błąd.", true);
             }
         }
-        
+
+        async function usunSpotkanie(id) {
+             showCustomConfirm('Potwierdzenie', 'Na pewno usunąć spotkanie?', async () => {
+                 try {
+                    await db.collection('spotkania').doc(id).delete();
+                    await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
+                } catch(err) { console.error(err); showCustomAlert("Błąd", "Wystąpił błąd.", true); }
+            });
+        }
+
         async function refreshSettingsForm() {
             const container = document.getElementById('settingsContainer');
             if (!container) return;
@@ -1124,8 +1585,16 @@
                     <h3>Ustawienia Globalne</h3>
                     <label for="kodDoKlodki">Kod do kłódki</label>
                     <input type="text" id="kodDoKlodki" value="${appSettings.kod_do_klodki || ''}">
-                    <label for="linkRegulaminu">Link do regulaminu</label>
-                    <input type="url" id="linkRegulaminu" value="${appSettings.link_regulaminu || ''}">
+                    <label for="limitWypozyczen">Limit wypożyczonych gier (0 = bez limitu)</label>
+                    <input type="number" id="limitWypozyczen" value="${appSettings.limit_wypozyczen || 0}" min="0">
+                    <label for="limitDniWypozyczenia">Limit dni na zwrot gry (0 = bez limitu)</label>
+                    <input type="number" id="limitDniWypozyczenia" value="${appSettings.limit_dni_wypozyczenia || 14}" min="0">
+                    <label for="linkRegulaminuKlubu">Link do regulaminu klubu</label>
+                    <input type="url" id="linkRegulaminuKlubu" value="${appSettings.link_regulaminu_klubu || ''}">
+                     <label for="linkRegulaminuWypozyczania">Link do regulaminu wypożyczania</label>
+                    <input type="url" id="linkRegulaminuWypozyczania" value="${appSettings.link_regulaminu_wypozyczania || ''}">
+                     <label for="linkKonstytucji">Link do konstytucji</label>
+                    <input type="url" id="linkKonstytucji" value="${appSettings.link_konstytucji || ''}">
 
                     <h3>Panel Podstawowy</h3>
                     <label for="podstawowyKolor">Kolor główny</label>
@@ -1159,7 +1628,7 @@
                     <button type="submit">Zapisz Ustawienia</button>
                 </form>
             `;
-            
+
             document.getElementById('settings-form').addEventListener('submit', zapiszUstawienia);
         }
 
@@ -1167,40 +1636,85 @@
             e.preventDefault();
             const newSettings = {
                 kod_do_klodki: document.getElementById('kodDoKlodki').value,
-                link_regulaminu: document.getElementById('linkRegulaminu').value,
+                link_regulaminu_klubu: document.getElementById('linkRegulaminuKlubu').value,
+                link_regulaminu_wypozyczania: document.getElementById('linkRegulaminuWypozyczania').value,
+                link_konstytucji: document.getElementById('linkKonstytucji').value,
                 podstawowy_motyw: document.getElementById('podstawowyMotyw').value,
                 podstawowy_kolor_glowny: document.getElementById('podstawowyKolor').value,
                 czlonek_motyw: document.getElementById('czlonekMotyw').value,
                 czlonek_kolor_glowny: document.getElementById('czlonekKolor').value,
                 admin_motyw: document.getElementById('adminMotyw').value,
                 admin_kolor_glowny: document.getElementById('adminKolor').value,
-                admin_kolor_akcentu: document.getElementById('adminAkcent').value
+                admin_kolor_akcentu: document.getElementById('adminAkcent').value,
+                limit_wypozyczen: parseInt(document.getElementById('limitWypozyczen').value, 10) || 0,
+                limit_dni_wypozyczenia: parseInt(document.getElementById('limitDniWypozyczenia').value, 10) || 0
             };
 
             try {
                 await db.collection('ustawienia').doc('global').set(newSettings);
                 appSettings = newSettings; // Update local copy
                 applyTheme(); // Re-apply theme immediately
-                alert("Ustawienia zapisane!");
+                showCustomAlert("Sukces", "Ustawienia zapisane!");
                 await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
-            } catch(err) {
+            } catch (err) {
                 console.error("Błąd zapisu ustawień:", err);
-                alert("Błąd podczas zapisywania.");
+                showCustomAlert("Błąd", "Błąd podczas zapisywania.", true);
             }
         }
+
+        // --- Logika Modala ---
+        const formModal = document.getElementById('formModal');
+        const formModalContent = document.getElementById('formModalContent');
+        const formModalTitle = document.getElementById('formModalTitle');
+
+        const infoModal = document.getElementById('infoModal');
+        const infoModalTitle = document.getElementById('infoModalTitle');
+        const infoModalBody = document.getElementById('infoModalBody');
+        const infoModalButtons = document.getElementById('infoModalButtons');
+
+        document.getElementById('closeFormModal').onclick = () => { formModal.style.display = 'none'; };
+        document.getElementById('closeInfoModal').onclick = () => { infoModal.style.display = 'none'; };
         
-        // --- Logika Modala Edycji ---
-        const modal = document.getElementById('editModal');
-        const modalContent = document.getElementById('editModalContent');
-        document.getElementById('closeModal').onclick = () => { modal.style.display = 'none'; };
-        window.onclick = (event) => { if (event.target == modal) { modal.style.display = 'none'; } };
+        window.onclick = (event) => {
+            if (event.target == formModal) { formModal.style.display = 'none'; }
+            if (event.target == infoModal) { infoModal.style.display = 'none'; }
+        };
+
+        function showCustomAlert(title, message, isError = false) {
+            infoModalTitle.textContent = title;
+            infoModalBody.innerHTML = `<p>${message}</p>`;
+            infoModalBody.style.color = isError ? 'var(--kolor-bledu)' : 'inherit';
+            infoModalButtons.innerHTML = `<button class="btn-primary">OK</button>`;
+            infoModalButtons.querySelector('button').onclick = () => { infoModal.style.display = 'none'; };
+            infoModal.style.display = 'flex';
+        }
+
+        function showCustomConfirm(title, message, onConfirm) {
+            infoModalTitle.textContent = title;
+            infoModalBody.innerHTML = `<p>${message}</p>`;
+            infoModalBody.style.color = 'inherit';
+            infoModalButtons.innerHTML = `
+                <button id="confirm-cancel" class="btn-secondary">Anuluj</button>
+                <button id="confirm-ok" class="btn-primary">OK</button>
+            `;
+            infoModal.style.display = 'flex';
+            
+            document.getElementById('confirm-ok').onclick = () => {
+                infoModal.style.display = 'none';
+                onConfirm();
+            };
+             document.getElementById('confirm-cancel').onclick = () => {
+                infoModal.style.display = 'none';
+            };
+        }
 
         async function openEditModal(type, id) {
+             formModalTitle.textContent = 'Edytuj'; // Reset title
             const doc = await db.collection(getCollectionName(type)).doc(id).get();
             const data = doc.data();
             let content = '';
 
-            switch(type) {
+            switch (type) {
                 case 'user':
                     content = `
                         <form id="edit-form">
@@ -1218,31 +1732,92 @@
                     `;
                     break;
                 case 'game':
-                     content = `<form id="edit-form"><label>Nazwa gry</label><input id="edit-nazwa" value="${data.nazwa_gry}"><button type="submit">Zapisz</button></form>`;
+                    content = `<form id="edit-form"><label>Nazwa gry</label><input id="edit-nazwa" value="${data.nazwa_gry}"><button type="submit">Zapisz</button></form>`;
                     break;
                 case 'link':
-                     content = `<form id="edit-form"><label>Nazwa</label><input id="edit-nazwa" value="${data.nazwa}"><label>Link</label><input id="edit-link" value="${data.link}"><button type="submit">Zapisz</button></form>`;
+                    content = `<form id="edit-form"><label>Nazwa</label><input id="edit-nazwa" value="${data.nazwa}"><label>Link</label><input id="edit-link" value="${data.link}"><button type="submit">Zapisz</button></form>`;
                     break;
                 case 'meeting':
                     const dateString = data.data_spotkania.toDate().toISOString().slice(0, 16);
                     content = `<form id="edit-form"><label>Data</label><input type="datetime-local" id="edit-data" value="${dateString}"><button type="submit">Zapisz</button></form>`;
                     break;
             }
-            modalContent.innerHTML = content;
-            modal.style.display = 'flex';
-            
-            document.getElementById('edit-form').addEventListener('submit', (e) => saveEdit(e, type, id));
+            formModalContent.innerHTML = content;
+            formModal.style.display = 'flex';
+
+            const editForm = document.getElementById('edit-form');
+            if(editForm) {
+                 editForm.addEventListener('submit', (e) => saveEdit(e, type, id));
+            }
         }
         
+         async function showMeetingAttendees(meetingId) {
+            infoModalTitle.textContent = 'Lista Obecności';
+            infoModalButtons.innerHTML = '';
+            const meetingDoc = await db.collection('spotkania').doc(meetingId).get();
+            if (!meetingDoc.exists) return;
+
+            const meetingData = meetingDoc.data();
+            const attendeeIds = meetingData.attendees || [];
+
+            if (attendeeIds.length === 0) {
+                infoModalBody.innerHTML = '<p>Nikt nie potwierdził obecności.</p>';
+                infoModal.style.display = 'flex';
+                return;
+            }
+
+            const attendeePromises = attendeeIds.map(id => db.collection('uzytkownicy').doc(id).get());
+            const attendeeDocs = await Promise.all(attendeePromises);
+            const attendeeNames = attendeeDocs
+                .map(doc => doc.exists ? `<li>${doc.data().imie} ${doc.data().nazwisko}</li>` : '<li>Użytkownik usunięty</li>')
+                .join('');
+            
+            infoModalBody.innerHTML = `<ul>${attendeeNames}</ul>`;
+            infoModal.style.display = 'flex';
+        }
+        
+         async function showUserAttendanceHistory(userId, userName) {
+            infoModalTitle.textContent = `Historia obecności: ${userName}`;
+            infoModalButtons.innerHTML = '';
+            const snapshot = await db.collection('spotkania')
+                .where('attendees', 'array-contains', userId)
+                .get();
+
+            if (snapshot.empty) {
+                infoModalBody.innerHTML = '<p>Brak historii obecności.</p>';
+                infoModal.style.display = 'flex';
+                return;
+            }
+
+            const sortedMeetings = snapshot.docs.sort((a, b) => {
+                const dateA = a.data().data_spotkania.toDate();
+                const dateB = b.data().data_spotkania.toDate();
+                return dateB - dateA;
+            });
+
+            const meetingDates = sortedMeetings
+                .map(doc => `<li>${doc.data().data_spotkania.toDate().toLocaleString('pl-PL')}</li>`)
+                .join('');
+            
+            infoModalBody.innerHTML = `<ul>${meetingDates}</ul>`;
+            infoModal.style.display = 'flex';
+        }
+
+
         function getCollectionName(type) {
-            const map = { user: 'uzytkownicy', game: 'gry', link: 'pliki', meeting: 'spotkania' };
+            const map = {
+                user: 'uzytkownicy',
+                game: 'gry',
+                link: 'pliki',
+                meeting: 'spotkania'
+            };
             return map[type];
         }
 
         async function saveEdit(e, type, id) {
             e.preventDefault();
             let dataToUpdate = {};
-            switch(type) {
+            switch (type) {
                 case 'user':
                     dataToUpdate = {
                         imie: document.getElementById('edit-imie').value,
@@ -1252,26 +1827,44 @@
                     };
                     break;
                 case 'game':
-                     dataToUpdate = { nazwa_gry: document.getElementById('edit-nazwa').value };
+                    dataToUpdate = {
+                        nazwa_gry: document.getElementById('edit-nazwa').value
+                    };
                     break;
                 case 'link':
-                     dataToUpdate = { nazwa: document.getElementById('edit-nazwa').value, link: document.getElementById('edit-link').value };
+                    dataToUpdate = {
+                        nazwa: document.getElementById('edit-nazwa').value,
+                        link: document.getElementById('edit-link').value
+                    };
                     break;
                 case 'meeting':
-                     dataToUpdate = { data_spotkania: new Date(document.getElementById('edit-data').value) };
+                    dataToUpdate = {
+                        data_spotkania: new Date(document.getElementById('edit-data').value)
+                    };
                     break;
             }
             try {
                 await db.collection(getCollectionName(type)).doc(id).update(dataToUpdate);
-                modal.style.display = 'none';
+                formModal.style.display = 'none';
                 await renderAdminTabContent(getActiveAdminTab(), currentUser, true);
-            } catch(err) {
+            } catch (err) {
                 console.error("Błąd zapisu:", err);
-                alert("Błąd");
+                showCustomAlert("Błąd", "Wystąpił błąd.", true);
+            }
+        }
+
+        // --- Inicjalizacja Aplikacji ---
+        function loadRememberedUser() {
+            const savedImie = localStorage.getItem('loginImie');
+            const savedNazwisko = localStorage.getItem('loginNazwisko');
+
+            if (savedImie && savedNazwisko) {
+                document.getElementById('imie').value = savedImie;
+                document.getElementById('nazwisko').value = savedNazwisko;
+                document.getElementById('rememberMe').checked = true;
             }
         }
         
-        // --- Inicjalizacja Aplikacji ---
         async function initApp() {
             const storedUser = sessionStorage.getItem('currentUser');
             if (storedUser) {
@@ -1281,7 +1874,8 @@
             }
         }
         initApp();
-
+        loadRememberedUser();
     </script>
 </body>
 </html>
+
