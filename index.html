@@ -255,6 +255,19 @@
             font-weight: bold;
         }
 
+        /* NOWE style dla kodu do kłódki */
+        .mobile-padlock-code {
+            display: none;
+            width: 100%;
+            text-align: center;
+            font-weight: 500;
+            font-size: 1.1em;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 10px;
+            color: white;
+        }
+
         .app-content {
             flex-grow: 1;
             padding: 25px;
@@ -466,19 +479,26 @@
 
         @media (max-width: 768px) {
             .app-header {
-                flex-direction: row; /* Revert to row for mobile header */
+                flex-direction: row;
+                flex-wrap: wrap; /* Dodane zawijanie */
                 justify-content: space-between;
+                align-items: center; /* Lepsze wyrównanie */
                 gap: 10px;
-                padding: 15px;
-            }
-            .app-header .user-info {
-                text-align: left; /* Adjust alignment */
-                display: none; /* Hide user info for more space */
-            }
-             .app-header .user-info:first-of-type {
-                display: block; /* Show only name */
+                padding: 10px 15px;
             }
 
+            .app-header .user-info {
+                text-align: left;
+                flex-grow: 1; /* Pozwala zająć dostępne miejsce */
+            }
+
+            .desktop-padlock-code {
+                display: none; /* Ukryj wersję desktopową na mobilce */
+            }
+
+            .mobile-padlock-code {
+                display: block; /* Pokaż wersję mobilną */
+            }
 
             .auth-form-container {
                 padding: 20px;
@@ -615,15 +635,15 @@
                     <h1>Logowanie</h1>
                      <p class="subtitle">Wprowadź swoje dane, aby kontynuować.</p>
                     <div class="input-group">
-                       <span class="icon">
-                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.571-.67 3.013-1.758 4.017C13.92 13.545 12 16.25 12 16.25s-1.92-2.705-3.742-4.233C7.17 11.013 6.5 9.57 6.5 8a5.5 5.5 0 0 1 5.5-5.5zM12 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/><path d="M12.562 21.313c.28.28.653.437 1.047.437H19.5a2.5 2.5 0 0 0 2.5-2.5v-6.91a.499.499 0 0 0-.494-.5c-.27 0-.503.22-.506.494v6.916a1.5 1.5 0 0 1-1.5 1.5h-5.89c-.19 0-.374-.075-.512-.213l-4.22-4.22a.5.5 0 0 0-.707 0l-4.22 4.22c-.138.138-.322.213-.512.213H2.5a1.5 1.5 0 0 1-1.5-1.5V12.34a.499.499 0 0 0-.506-.494.499.499 0 0 0-.494.5v6.91a2.5 2.5 0 0 0 2.5 2.5h5.89c.394 0 .767-.157 1.047-.437l4.125-4.125 4.125 4.125z"/></svg>
-                       </span>
+                        <span class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.571-.67 3.013-1.758 4.017C13.92 13.545 12 16.25 12 16.25s-1.92-2.705-3.742-4.233C7.17 11.013 6.5 9.57 6.5 8a5.5 5.5 0 0 1 5.5-5.5zM12 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/><path d="M12.562 21.313c.28.28.653.437 1.047.437H19.5a2.5 2.5 0 0 0 2.5-2.5v-6.91a.499.499 0 0 0-.494-.5c-.27 0-.503.22-.506.494v6.916a1.5 1.5 0 0 1-1.5 1.5h-5.89c-.19 0-.374-.075-.512-.213l-4.22-4.22a.5.5 0 0 0-.707 0l-4.22 4.22c-.138.138-.322.213-.512.213H2.5a1.5 1.5 0 0 1-1.5-1.5V12.34a.499.499 0 0 0-.506-.494.499.499 0 0 0-.494.5v6.91a2.5 2.5 0 0 0 2.5 2.5h5.89c.394 0 .767-.157 1.047-.437l4.125-4.125 4.125 4.125z"/></svg>
+                        </span>
                         <input type="text" id="imie" placeholder="Imię">
                     </div>
                     <div class="input-group">
-                       <span class="icon">
-                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.571-.67 3.013-1.758 4.017C13.92 13.545 12 16.25 12 16.25s-1.92-2.705-3.742-4.233C7.17 11.013 6.5 9.57 6.5 8a5.5 5.5 0 0 1 5.5-5.5zM12 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/><path d="M12.562 21.313c.28.28.653.437 1.047.437H19.5a2.5 2.5 0 0 0 2.5-2.5v-6.91a.499.499 0 0 0-.494-.5c-.27 0-.503.22-.506.494v6.916a1.5 1.5 0 0 1-1.5 1.5h-5.89c-.19 0-.374-.075-.512-.213l-4.22-4.22a.5.5 0 0 0-.707 0l-4.22 4.22c-.138.138-.322.213-.512.213H2.5a1.5 1.5 0 0 1-1.5-1.5V12.34a.499.499 0 0 0-.506-.494.499.499 0 0 0-.494.5v6.91a2.5 2.5 0 0 0 2.5 2.5h5.89c.394 0 .767-.157 1.047-.437l4.125-4.125 4.125 4.125z"/></svg>
-                       </span>
+                        <span class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.571-.67 3.013-1.758 4.017C13.92 13.545 12 16.25 12 16.25s-1.92-2.705-3.742-4.233C7.17 11.013 6.5 9.57 6.5 8a5.5 5.5 0 0 1 5.5-5.5zM12 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/><path d="M12.562 21.313c.28.28.653.437 1.047.437H19.5a2.5 2.5 0 0 0 2.5-2.5v-6.91a.499.499 0 0 0-.494-.5c-.27 0-.503.22-.506.494v6.916a1.5 1.5 0 0 1-1.5 1.5h-5.89c-.19 0-.374-.075-.512-.213l-4.22-4.22a.5.5 0 0 0-.707 0l-4.22 4.22c-.138.138-.322.213-.512.213H2.5a1.5 1.5 0 0 1-1.5-1.5V12.34a.499.499 0 0 0-.506-.494.499.499 0 0 0-.494.5v6.91a2.5 2.5 0 0 0 2.5 2.5h5.89c.394 0 .767-.157 1.047-.437l4.125-4.125 4.125 4.125z"/></svg>
+                        </span>
                         <input type="text" id="nazwisko" placeholder="Nazwisko">
                     </div>
                     <div class="remember-me-container">
@@ -641,19 +661,19 @@
                     <p class="subtitle">Dołącz do naszej społeczności graczy.</p>
                     <div class="input-group">
                          <span class="icon">
-                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.571-.67 3.013-1.758 4.017C13.92 13.545 12 16.25 12 16.25s-1.92-2.705-3.742-4.233C7.17 11.013 6.5 9.57 6.5 8a5.5 5.5 0 0 1 5.5-5.5zM12 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/><path d="M12.562 21.313c.28.28.653.437 1.047.437H19.5a2.5 2.5 0 0 0 2.5-2.5v-6.91a.499.499 0 0 0-.494-.5c-.27 0-.503.22-.506.494v6.916a1.5 1.5 0 0 1-1.5 1.5h-5.89c-.19 0-.374-.075-.512-.213l-4.22-4.22a.5.5 0 0 0-.707 0l-4.22 4.22c-.138.138-.322.213-.512.213H2.5a1.5 1.5 0 0 1-1.5-1.5V12.34a.499.499 0 0 0-.506-.494.499.499 0 0 0-.494.5v6.91a2.5 2.5 0 0 0 2.5 2.5h5.89c.394 0 .767-.157 1.047-.437l4.125-4.125 4.125 4.125z"/></svg>
-                       </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.571-.67 3.013-1.758 4.017C13.92 13.545 12 16.25 12 16.25s-1.92-2.705-3.742-4.233C7.17 11.013 6.5 9.57 6.5 8a5.5 5.5 0 0 1 5.5-5.5zM12 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/><path d="M12.562 21.313c.28.28.653.437 1.047.437H19.5a2.5 2.5 0 0 0 2.5-2.5v-6.91a.499.499 0 0 0-.494-.5c-.27 0-.503.22-.506.494v6.916a1.5 1.5 0 0 1-1.5 1.5h-5.89c-.19 0-.374-.075-.512-.213l-4.22-4.22a.5.5 0 0 0-.707 0l-4.22 4.22c-.138.138-.322.213-.512.213H2.5a1.5 1.5 0 0 1-1.5-1.5V12.34a.499.499 0 0 0-.506-.494.499.499 0 0 0-.494.5v6.91a2.5 2.5 0 0 0 2.5 2.5h5.89c.394 0 .767-.157 1.047-.437l4.125-4.125 4.125 4.125z"/></svg>
+                        </span>
                         <input type="text" id="regImie" placeholder="Imię" required>
                     </div>
                     <div class="input-group">
                         <span class="icon">
-                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.571-.67 3.013-1.758 4.017C13.92 13.545 12 16.25 12 16.25s-1.92-2.705-3.742-4.233C7.17 11.013 6.5 9.57 6.5 8a5.5 5.5 0 0 1 5.5-5.5zM12 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/><path d="M12.562 21.313c.28.28.653.437 1.047.437H19.5a2.5 2.5 0 0 0 2.5-2.5v-6.91a.499.499 0 0 0-.494-.5c-.27 0-.503.22-.506.494v6.916a1.5 1.5 0 0 1-1.5 1.5h-5.89c-.19 0-.374-.075-.512-.213l-4.22-4.22a.5.5 0 0 0-.707 0l-4.22 4.22c-.138.138-.322.213-.512.213H2.5a1.5 1.5 0 0 1-1.5-1.5V12.34a.499.499 0 0 0-.506-.494.499.499 0 0 0-.494.5v6.91a2.5 2.5 0 0 0 2.5 2.5h5.89c.394 0 .767-.157 1.047-.437l4.125-4.125 4.125 4.125z"/></svg>
-                       </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.571-.67 3.013-1.758 4.017C13.92 13.545 12 16.25 12 16.25s-1.92-2.705-3.742-4.233C7.17 11.013 6.5 9.57 6.5 8a5.5 5.5 0 0 1 5.5-5.5zM12 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/><path d="M12.562 21.313c.28.28.653.437 1.047.437H19.5a2.5 2.5 0 0 0 2.5-2.5v-6.91a.499.499 0 0 0-.494-.5c-.27 0-.503.22-.506.494v6.916a1.5 1.5 0 0 1-1.5 1.5h-5.89c-.19 0-.374-.075-.512-.213l-4.22-4.22a.5.5 0 0 0-.707 0l-4.22 4.22c-.138.138-.322.213-.512.213H2.5a1.5 1.5 0 0 1-1.5-1.5V12.34a.499.499 0 0 0-.506-.494.499.499 0 0 0-.494.5v6.91a2.5 2.5 0 0 0 2.5 2.5h5.89c.394 0 .767-.157 1.047-.437l4.125-4.125 4.125 4.125z"/></svg>
+                        </span>
                         <input type="text" id="regNazwisko" placeholder="Nazwisko" required>
                     </div>
                     <div class="input-group">
                         <span class="icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.05,20.5A3.5,3.5,0,0,1,2.55,17V7A3.5,3.5,0,0,1,6.05,3.5h11.9A3.5,3.5,0,0,1,21.45,7V17a3.5,3.5,0,0,1-3.5,3.5Zm.5-16A2.5,2.5,0,0,0,4.05,7V17a2.5,2.5,0,0,0,2.5,2.5h11.9a2.5,2.5,0,0,0,2.5-2.5V7a2.5,2.5,0,0,0-2.5-2.5Z"/><path d="M16.5,7.25a.75.75,0,0,0-1.5,0v.5a.75.75,0,0,0,1.5,0Z"/><path d="M15,15.5H9a.75.75,0,0,0,0,1.5h6a.75.75,0,0,0,0-1.5Z"/></svg>
+                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.05,20.5A3.5,3.5,0,0,1,2.55,17V7A3.5,3.5,0,0,1,6.05,3.5h11.9A3.5,3.5,0,0,1,21.45,7V17a3.5,3.5,0,0,1-3.5,3.5Zm.5-16A2.5,2.5,0,0,0,4.05,7V17a2.5,2.5,0,0,0,2.5,2.5h11.9a2.5,2.5,0,0,0,2.5-2.5V7a2.5,2.5,0,0,0-2.5-2.5Z"/><path d="M16.5,7.25a.75.75,0,0,0-1.5,0v.5a.75.75,0,0,0,1.5,0Z"/><path d="M15,15.5H9a.75.75,0,0,0,0,1.5h6a.75.75,0,0,0,0-1.5Z"/></svg>
                         </span>
                         <input type="tel" id="regTelefon" placeholder="Numer telefonu" required>
                     </div>
@@ -707,7 +727,7 @@
             apiKey: "AIzaSyBB71iRGlgtxlhcbQpMIlbLtRF96kRxZ-g",
             authDomain: "klubplanszowkowy.firebaseapp.com",
             projectId: "klubplanszowkowy",
-            storageBucket: "klubplanszowkowy.firebasestorage.app",
+            storageBucket: "klubplanszowkowy.appspot.com",
             messagingSenderId: "727125718017",
             appId: "1:727125718017:web:fdd4d6d1b30ae29b10bc00"
         };
@@ -927,6 +947,10 @@
         function logout() {
             currentUser = null;
             sessionStorage.removeItem('currentUser');
+            // ZMIANA: Usuń zapamiętane dane przy wylogowaniu
+            localStorage.removeItem('loginImie');
+            localStorage.removeItem('loginNazwisko');
+
             appPanel.innerHTML = '';
             appPanel.style.display = 'none';
             authContainer.style.display = 'flex';
@@ -939,11 +963,14 @@
         async function renderHeader(user) {
             return `
                 <div class="app-header" style="background-color: ${getPrimaryColor(user.poziom_uprawnien)};">
+                    <div class="mobile-padlock-code">
+                        <span>Kod do kłódki: ${appSettings.kod_do_klodki}</span>
+                    </div>
                     <div class="user-info">
                         <span>${user.imie} ${user.nazwisko}</span>
                         <small>${user.poziom_uprawnien}</small>
                     </div>
-                    <div class="user-info">
+                    <div class="user-info desktop-padlock-code">
                         <span>Kod do kłódki: ${appSettings.kod_do_klodki}</span>
                     </div>
                     <button onclick="logout()">Wyloguj</button>
@@ -1050,11 +1077,14 @@
         async function renderAdminPanel(user, activeTab = 'admin-borrow') {
             const adminHeaderHtml = `
                 <div class="app-header" style="background-color: ${getPrimaryColor(user.poziom_uprawnien)};">
+                    <div class="mobile-padlock-code">
+                         <span>Kod do kłódki: ${appSettings.kod_do_klodki}</span>
+                    </div>
                     <div class="user-info">
                         <span>${user.imie} ${user.nazwisko}</span>
                         <small>${user.poziom_uprawnien}</small>
                     </div>
-                    <div class="user-info">
+                    <div class="user-info desktop-padlock-code">
                         <span>Kod do kłódki: ${appSettings.kod_do_klodki}</span>
                     </div>
                     <button class="desktop-logout" onclick="logout()">Wyloguj</button>
@@ -2125,8 +2155,8 @@
                          buttons = `<button class="edit-btn" onclick="openEditModal('proposal', '${doc.id}')">Edytuj</button>`;
                     } else {
                         buttons = `<button onclick="voteForProposal('${doc.id}', '${user.id}')" ${hasVoted ? 'disabled' : ''}>
-                                    ${hasVoted ? 'Zagłosowano' : 'Głosuj'}
-                                </button>`;
+                                     ${hasVoted ? 'Zagłosowano' : 'Głosuj'}
+                                 </button>`;
                     }
 
                     html += `
@@ -2225,32 +2255,62 @@
 
 
         // --- Inicjalizacja Aplikacji ---
-        function loadRememberedUser() {
+        async function initApp() {
+            // 1. Sprawdź, czy istnieje aktywna sesja
+            const storedUser = sessionStorage.getItem('currentUser');
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+                // Konwertuj timestampy, jeśli to konieczne
+                if (currentUser.ban && currentUser.ban.expires) {
+                    currentUser.ban.expires = new firebase.firestore.Timestamp(currentUser.ban.expires.seconds, currentUser.ban.expires.nanoseconds);
+                }
+                await fetchAppSettings();
+                await renderApp();
+                return; // Pomyślnie przywrócono sesję, zakończ funkcję
+            }
+
+            // 2. Jeśli nie ma sesji, spróbuj automatycznego logowania z localStorage
             const savedImie = localStorage.getItem('loginImie');
             const savedNazwisko = localStorage.getItem('loginNazwisko');
 
             if (savedImie && savedNazwisko) {
-                document.getElementById('imie').value = savedImie;
-                document.getElementById('nazwisko').value = savedNazwisko;
+                try {
+                    const snapshot = await db.collection('uzytkownicy')
+                        .where('imie', '==', savedImie)
+                        .where('nazwisko', '==', savedNazwisko)
+                        .limit(1)
+                        .get();
+
+                    if (!snapshot.empty) {
+                        currentUser = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+                        sessionStorage.setItem('currentUser', JSON.stringify(currentUser)); // Utwórz nową sesję
+                        await fetchAppSettings();
+                        await renderApp();
+                        return; // Pomyślnie zalogowano, zakończ funkcję
+                    } else {
+                        // Zapisany użytkownik nie został znaleziony w DB, wyczyść localStorage
+                        localStorage.removeItem('loginImie');
+                        localStorage.removeItem('loginNazwisko');
+                    }
+                } catch (error) {
+                    console.error("Automatyczne logowanie nie powiodło się:", error);
+                    localStorage.removeItem('loginImie');
+                    localStorage.removeItem('loginNazwisko');
+                }
+            }
+            
+            // 3. Jeśli dotarliśmy tutaj, oznacza to brak sesji i nieudane auto-logowanie.
+            // Wypełnij pola logowania, jeśli istnieją z poprzedniego (ale teraz nieprawidłowego) "zapamiętaj mnie"
+            const rememberedImie = localStorage.getItem('loginImie');
+            const rememberedNazwisko = localStorage.getItem('loginNazwisko');
+            if (rememberedImie && rememberedNazwisko) {
+                document.getElementById('imie').value = rememberedImie;
+                document.getElementById('nazwisko').value = rememberedNazwisko;
                 document.getElementById('rememberMe').checked = true;
             }
         }
-        
-        async function initApp() {
-            const storedUser = sessionStorage.getItem('currentUser');
-            if (storedUser) {
-                currentUser = JSON.parse(storedUser);
-                // Konwersja pól timestamp z powrotem na obiekty Date
-                if(currentUser.ban && currentUser.ban.expires) {
-                    currentUser.ban.expires = new firebase.firestore.Timestamp(currentUser.ban.expires.seconds, currentUser.ban.expires.nanoseconds);
-                }
-                await fetchAppSettings();
-                renderApp();
-            }
-        }
+
         initApp();
-        loadRememberedUser();
     </script>
 </body>
 </html>
-
